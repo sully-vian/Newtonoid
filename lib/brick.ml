@@ -1,5 +1,8 @@
-(* xmin, xmax, ymin, ymax, pv, score *)
-type brick = float * float * float * float * int * int
+open Rectangle
 
-let make_brick : float -> float -> float -> float -> int -> int -> brick =
- fun xmin xmax ymin ymax pv score-> xmin, xmax, ymin, ymax, pv, score
+(* rectangle, (pv, xp) *)
+type brick = rectangle * (int * int)
+
+let make_brick : rectangle -> int -> int -> brick =
+ fun rect pv xp -> rect, (pv, xp)
+;;
