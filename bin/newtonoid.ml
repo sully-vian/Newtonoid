@@ -23,9 +23,10 @@ let graphic_format =
     (int_of_float ((2. *. Box.marge) +. Box.supx -. Box.infx))
     (int_of_float ((2. *. Box.marge) +. Box.supy -. Box.infy))
 
+(* TODO *)
 let draw_state etat = failwith "A DEFINIR"
 
-(* extrait le score courant d'un etat : *)
+(* TODO: extrait le score courant d'un etat : *)
 let score etat : int = failwith "A DEFINIR"
 
 let draw flux_etat =
