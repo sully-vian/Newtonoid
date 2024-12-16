@@ -1,5 +1,19 @@
 # Newtonoid
 
+## Pour compiler
+
+```bash
+dune build bin/newtonoid.exe
+```
+
+## Pour lancer
+
+```bash
+dune exec bin/newtonoid.exe
+```
+
+## Infos
+
 Le code est decoupé en 2 répertoires :
 
 - [`lib/`](./lib/) contient les modules et interfaces implémentant les divers éléments du jeu. Il n'implemente pas le programme principal. Le fichier [`lib/dune`](./lib/dune) contient une directive qui fait que dune créera une bibliotheque appelle libnewtonoid contenant tous ces modules de [`lib/`](./lib/) et utilisable par les modules de [`bin/`](./bin/). Ces modules peuvent utiliser les bibliothèques "graphics" et "unix" ainsi que les tests de la forme `let%test`.
