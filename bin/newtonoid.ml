@@ -6,7 +6,7 @@ module Init = struct
   let dt = 1. /. 60. (* 60 Hz *)
 end
 
-let box = Box.make 10. 10. 10. 150. 100. (* format de la fenêtre graphique *)
+let box = Box.make 10. 10. 10. 800. 600. (* format de la fenêtre graphique *)
 
 let graphic_format =
   Format.sprintf
@@ -17,9 +17,6 @@ let graphic_format =
 
 (* TODO *)
 let draw_state etat = failwith "A DEFINIR"
-
-(* TODO: extrait le score courant d'un etat : *)
-let score etat : int = failwith "A DEFINIR"
 
 let draw flux_etat =
   let rec loop flux_etat last_score =
@@ -34,8 +31,8 @@ let draw flux_etat =
       Unix.sleepf Init.dt;
       (* loop flux_etat' (last_score + score etat) *)
       loop flux_etat' last_score
-    | _ -> assert false
   in
+  Graphics.set_window_title "Newtonoid";
   Graphics.open_graph graphic_format;
   Graphics.auto_synchronize false;
   let score = loop flux_etat 0 in
@@ -56,6 +53,7 @@ let follow_mouse () =
       Unix.sleepf Init.dt;
       loop paddle' flux_mouse'
   in
+  Graphics.set_window_title "Newtonoid";
   Graphics.open_graph graphic_format;
   Graphics.auto_synchronize false;
   let paddle = Paddle.make 50. 50. 100. 20. in
@@ -64,6 +62,7 @@ let follow_mouse () =
 
 (* exemple de dessin de niveau *)
 let draw_level () =
+  Graphics.set_window_title "Newtonoid";
   Graphics.open_graph graphic_format;
   Graphics.auto_synchronize false;
   let rec loop () =
@@ -78,6 +77,7 @@ let draw_level () =
 
 (* exemple de balle qui rebondit *)
 let draw_ball () =
+  Graphics.set_window_title "Newtonoid";
   Graphics.open_graph graphic_format;
   Graphics.auto_synchronize false;
   let rec loop ball =
@@ -92,4 +92,55 @@ let draw_ball () =
   loop ball
 ;;
 
-let () = draw_ball ()
+(* exemple de balle avec une brique *)
+let collide_brick () =
+  Graphics.set_window_title "Newtonoid";
+  Graphics.open_graph graphic_format;
+  Graphics.auto_synchronize false;
+  let rec loop ball brick =
+    Graphics.clear_graph ();
+    Brick.draw brick;
+    Ball.draw ball;
+    Graphics.synchronize ();
+    Unix.sleepf Init.dt;
+    let ball', brick' =
+      Collision.ball_brick
+        (Collision.ball_box (Ball.update ball Init.dt) box)
+        brick
+    in
+    loop ball' brick'
+  in
+  let ball = Ball.make 400. 300. 10. 300. 500. in
+  let brick = Brick.make (Rectangle.make 100. 100. 600. 50.) Brick.Strong in
+  loop ball brick
+;;
+
+(* exemple de balle avec plusieurs briques *)
+(* let collide_level () = Graphics.set_window_title "Newtonoid";
+   Graphics.open_graph graphic_format; Graphics.auto_synchronize false; let rec
+   loop ball level = Graphics.clear_graph (); Level.draw level; Ball.draw ball;
+   Graphics.synchronize (); Unix.sleepf Init.dt; let ball', level' =
+   Collision.ball_level (Collision.ball_box (Ball.update ball Init.dt) box)
+   level in loop ball' level' in let ball = Ball.make 400. 300. 10. 300. 500. in
+   let level = Level.example_level in loop ball level ;; *)
+
+(* exemple avec le score en plus *)
+let collide_score () =
+  Graphics.set_window_title "Newtonoid";
+  Graphics.open_graph graphic_format;
+  Graphics.auto_synchronize false;
+  let update = State.update box Init.dt in
+  let rec loop state =
+    Graphics.clear_graph ();
+    State.draw state;
+    Graphics.synchronize ();
+    Unix.sleepf Init.dt;
+    let state' = update state in
+    loop state'
+  in
+  let ball = Ball.make 400. 300. 10. 300. 500. in
+  let level = Level.example_level in
+  loop (ball, level, 0)
+;;
+
+let () = collide_score ()

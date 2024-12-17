@@ -1,4 +1,3 @@
-(* TODO *)
 let ball_brick ball brick =
   let open Rectangle in
   let open Ball in
@@ -10,20 +9,46 @@ let ball_brick ball brick =
   let dy = closest_y -. ball.y in
   let dist2 = (dx *. dx) +. (dy *. dy) in
   (* check si collision *)
-  if dist2 > ball.r *. ball.r then ball (* pas de collision *)
+  if dist2 > ball.r *. ball.r then
+    ball, brick
+  (* pas de collision *)
   else (
     (* check le côté de la collision *)
     let vx', vy' =
       if abs_float dx > abs_float dy then
         (* collision horizontale *)
-        -.ball.vx, -.ball.vy
-      else (* collision verticale *)
+        -.ball.vx, ball.vy
+      else
+        (* collision verticale *)
         ball.vx, -.ball.vy
     in
-    { ball with vx = vx'; vy = vy' })
+    (* mise-à-jour des vitesses et perte d'un point de vie pour la brique *)
+    { ball with vx = vx'; vy = vy' }, { brick with pv = brick.pv - 1 }
+  )
 ;;
 
-(* let ball_level ball level = List.fold_left ball_brick ball level *)
+let update_score_and_level ball brick level score =
+  if Brick.is_alive brick then
+    ball, brick :: level, score
+  else (
+    (* On exclue la brique lorsqu'elle est détruite *)
+    let xp = Brick.xp brick in
+    ball, level, score + xp
+  )
+;;
+
+let rec ball_level ball level score =
+  match level with
+  | [] -> ball, level, score
+  | brick :: level_t ->
+    (* collision courante *)
+    let ball_after, brick_after = ball_brick ball brick in
+    (* reste du niveau *)
+    let final_ball, level_after, score_after =
+      ball_level ball_after level_t score
+    in
+    update_score_and_level final_ball brick_after level_after score_after
+;;
 
 let bounce_x box ball =
   let open Ball in
@@ -32,7 +57,8 @@ let bounce_x box ball =
     { ball with x = box.infx +. ball.r; vx = -.ball.vx }
   else if ball.x +. ball.r > box.supx then
     { ball with x = box.supx -. ball.r; vx = -.ball.vx }
-  else ball
+  else
+    ball
 ;;
 
 let bounce_y box ball =
@@ -42,7 +68,8 @@ let bounce_y box ball =
     { ball with y = box.infy +. ball.r; vy = -.ball.vy }
   else if ball.y +. ball.r > box.supy then
     { ball with y = box.supy -. ball.r; vy = -.ball.vy }
-  else ball
+  else
+    ball
 ;;
 
 let ball_box ball box = bounce_x box (bounce_y box ball)
