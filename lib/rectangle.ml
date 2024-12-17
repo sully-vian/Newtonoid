@@ -1,15 +1,16 @@
-(* x, y, largeur, hauteur *)
-type rectangle = float * float * float * float
+type t =
+  { x : float
+  ; y : float
+  ; w : float
+  ; h : float
+  }
 
-let make : float -> float -> float -> float -> rectangle =
-  fun x y width height -> x, y, width, height
-;;
+let make x y w h = { x; y; w; h }
 
-let draw : rectangle -> unit =
-  fun (x, y, width, height) ->
+let draw rect =
   Graphics.fill_rect
-    (int_of_float x)
-    (int_of_float y)
-    (int_of_float width)
-    (int_of_float height)
+    (int_of_float rect.x)
+    (int_of_float rect.y)
+    (int_of_float rect.w)
+    (int_of_float rect.h)
 ;;

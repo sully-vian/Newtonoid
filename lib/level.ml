@@ -1,14 +1,12 @@
-open Brick
+type t = Brick.t list
 
-type level = brick list
+let make l = l
+let draw l = List.iter Brick.draw l
 
-let make : brick list -> level = fun l -> l
-let draw : level -> unit = fun l -> List.iter Brick.draw l
-
-let example_level : level =
-  [ Rectangle.make 0. 0. 100. 20., (1, 1)
-  ; Rectangle.make 100. 0. 100. 20., (2, 2)
-  ; Rectangle.make 200. 0. 100. 20., (3, 3)
-  ; Rectangle.make 300. 0. 100. 20., (4, 4)
+let example_level =
+  [ Brick.make (Rectangle.make 10. 10. 50. 20.) 1 1
+  ; Brick.make (Rectangle.make 70. 10. 50. 20.) 2 2
+  ; Brick.make (Rectangle.make 130. 10. 50. 20.) 3 3
+  ; Brick.make (Rectangle.make 190. 10. 50. 20.) 4 4
   ]
 ;;

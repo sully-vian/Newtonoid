@@ -18,6 +18,7 @@ module Box = struct
 end
 
 let graphic_format =
+  (* largeur, hauteur + marges en dehors de la fenêtre *)
   Format.sprintf
     " %dx%d+50+50"
     (int_of_float ((2. *. Box.marge) +. Box.supx -. Box.infx))
@@ -34,11 +35,10 @@ let draw flux_etat =
   let rec loop flux_etat last_score =
     match Flux.(uncons flux_etat) with
     | None -> last_score
-    | Some ((x, _), flux_etat') ->
+    | Some (etat, flux_etat') ->
       Graphics.clear_graph ();
       (* DESSIN ETAT *)
-      (* draw_state etat; *)
-      Rectangle.draw (Rectangle.make x 10. 50. 20.);
+      draw_state etat;
       (* FIN DESSIN ETAT *)
       Graphics.synchronize ();
       Unix.sleepf Init.dt;
@@ -54,7 +54,23 @@ let draw flux_etat =
 ;;
 
 (* exemple de rectangle qui suit la souris *)
-let follow_mouse () = draw Input.mouse
+let follow_mouse () =
+  let rec loop current_paddle flux_mouse =
+    Graphics.clear_graph ();
+    match Flux.(uncons flux_mouse) with
+    | None -> ()
+    | Some ((mouse_x, _), flux_mouse') ->
+      let paddle' = Paddle.update current_paddle mouse_x in
+      Paddle.draw paddle';
+      Graphics.synchronize ();
+      Unix.sleepf Init.dt;
+      loop paddle' flux_mouse'
+  in
+  Graphics.open_graph graphic_format;
+  Graphics.auto_synchronize false;
+  let paddle = Paddle.make 400.0 50.0 100.0 20.0 in
+  loop paddle Input.mouse
+;;
 
 (* exemple de dessin de niveau *)
 let level_draw () =
@@ -70,4 +86,5 @@ let level_draw () =
   loop ()
 ;;
 
-let () = game_hello ()
+let () = follow_mouse ()
+

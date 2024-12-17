@@ -1,14 +1,16 @@
-(* xball, yball, radius *)
-type ball = (float * float * float)
+type t =
+  { x : float
+  ; y : float
+  ; r : float
+  ; vx : float
+  ; vy : float
+  }
 
-let make : float -> float -> float -> ball =
-  fun xball yball rball -> xball, yball, rball
-;;
+let make x y r = { x; y; r; vx = 0.; vy = 0. }
+let move b dx dy = { b with x = b.x +. dx; y = b.y +. dy }
+let update b dt = move b (b.vx *. dt) (b.vy *. dt)
 
-let draw : ball -> unit =
-  fun (xball, yball, rball) ->
-  Graphics.fill_circle
-    (int_of_float xball)
-    (int_of_float yball)
-    (int_of_float rball)
+let draw b =
+  Graphics.set_color Graphics.black;
+  Graphics.fill_circle (int_of_float b.x) (int_of_float b.y) (int_of_float b.r)
 ;;
