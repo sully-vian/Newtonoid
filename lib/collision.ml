@@ -1,4 +1,4 @@
-let ball_brick ball brick =
+let with_brick ball brick =
   let open Rectangle in
   let open Ball in
   let open Brick in
@@ -37,15 +37,15 @@ let update_score_and_level ball brick level score =
   )
 ;;
 
-let rec ball_level ball level score =
+let rec with_level ball level score =
   match level with
   | [] -> ball, level, score
   | brick :: level_t ->
     (* collision courante *)
-    let ball_after, brick_after = ball_brick ball brick in
+    let ball_after, brick_after = with_brick ball brick in
     (* reste du niveau *)
     let final_ball, level_after, score_after =
-      ball_level ball_after level_t score
+      with_level ball_after level_t score
     in
     update_score_and_level final_ball brick_after level_after score_after
 ;;
@@ -72,4 +72,29 @@ let bounce_y box ball =
     ball
 ;;
 
-let ball_box ball box = bounce_x box (bounce_y box ball)
+let with_box ball box = bounce_x box (bounce_y box ball)
+
+let with_paddle (ball : Ball.t) (paddle : Paddle.t) =
+  let closest_x = max paddle.x (min ball.x (paddle.x +. paddle.w)) in
+  let closest_y = max paddle.y (min ball.y (paddle.y +. paddle.h)) in
+  let dx = closest_x -. ball.x in
+  let dy = closest_y -. ball.y in
+  let dist2 = (dx *. dx) +. (dy *. dy) in
+  (* check si collision *)
+  if dist2 > ball.r *. ball.r then
+    ball
+  (* pas de collision *)
+  else (
+    (* check le côté de la collision *)
+    let vx', vy' =
+      if abs_float dx > abs_float dy then
+        (* collision horizontale *)
+        -.ball.vx, ball.vy
+      else
+        (* collision verticale *)
+        ball.vx, -.ball.vy
+    in
+    (* mise-à-jour des vitesses *)
+    { ball with vx = vx'; vy = vy' }
+  )
+;;

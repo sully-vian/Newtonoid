@@ -85,7 +85,7 @@ let draw_ball () =
     Ball.draw ball;
     Graphics.synchronize ();
     Unix.sleepf Init.dt;
-    let ball' = Collision.ball_box (Ball.update ball Init.dt) box in
+    let ball' = Collision.with_box (Ball.update ball Init.dt) box in
     loop ball'
   in
   let ball = Ball.make 400. 300. 10. 100. 200. in
@@ -104,8 +104,8 @@ let collide_brick () =
     Graphics.synchronize ();
     Unix.sleepf Init.dt;
     let ball', brick' =
-      Collision.ball_brick
-        (Collision.ball_box (Ball.update ball Init.dt) box)
+      Collision.with_brick
+        (Collision.with_box (Ball.update ball Init.dt) box)
         brick
     in
     loop ball' brick'

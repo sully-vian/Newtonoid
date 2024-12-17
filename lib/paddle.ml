@@ -1,13 +1,9 @@
-type t =
-  { x : float
-  ; y : float
-  ; w : float
-  ; h : float
-  }
+open Rectangle
+
+type t = Rectangle.t
 
 let make x y w h = { x; y; w; h }
-let update p mouse_x =
-  { p with x = mouse_x }
+let update paddle mouse_x = { paddle with x = mouse_x }
 
 let draw p =
   Graphics.set_color Graphics.black;
