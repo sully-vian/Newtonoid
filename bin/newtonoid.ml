@@ -2,27 +2,17 @@
 open Libnewtonoid
 open Iterator
 
-(* exemple d'ouvertue d'un tel module de la bibliotheque : *)
-open Game
-
 module Init = struct
   let dt = 1. /. 60. (* 60 Hz *)
 end
 
-module Box = struct
-  let marge = 10.
-  let infx = 10.
-  let infy = 10.
-  let supx = 790.
-  let supy = 590.
-end
+let box = Box.make 10. 10. 10. 150. 100. (* format de la fenêtre graphique *)
 
 let graphic_format =
-  (* largeur, hauteur + marges en dehors de la fenêtre *)
   Format.sprintf
     " %dx%d+50+50"
-    (int_of_float ((2. *. Box.marge) +. Box.supx -. Box.infx))
-    (int_of_float ((2. *. Box.marge) +. Box.supy -. Box.infy))
+    (int_of_float ((2. *. box.marge) +. box.supx -. box.infx))
+    (int_of_float ((2. *. box.marge) +. box.supy -. box.infy))
 ;;
 
 (* TODO *)
@@ -68,12 +58,12 @@ let follow_mouse () =
   in
   Graphics.open_graph graphic_format;
   Graphics.auto_synchronize false;
-  let paddle = Paddle.make 400.0 50.0 100.0 20.0 in
+  let paddle = Paddle.make 50. 50. 100. 20. in
   loop paddle Input.mouse
 ;;
 
 (* exemple de dessin de niveau *)
-let level_draw () =
+let draw_level () =
   Graphics.open_graph graphic_format;
   Graphics.auto_synchronize false;
   let rec loop () =
@@ -86,5 +76,20 @@ let level_draw () =
   loop ()
 ;;
 
-let () = follow_mouse ()
+(* exemple de balle qui rebondit *)
+let draw_ball () =
+  Graphics.open_graph graphic_format;
+  Graphics.auto_synchronize false;
+  let rec loop ball =
+    Graphics.clear_graph ();
+    Ball.draw ball;
+    Graphics.synchronize ();
+    Unix.sleepf Init.dt;
+    let ball' = Collision.ball_box (Ball.update ball Init.dt) box in
+    loop ball'
+  in
+  let ball = Ball.make 400. 300. 10. 100. 200. in
+  loop ball
+;;
 
+let () = draw_ball ()

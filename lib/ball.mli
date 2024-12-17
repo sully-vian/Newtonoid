@@ -12,8 +12,8 @@ type t =
   ; vy : float
   }
 
-(** [make x y r] Crée une balle de rayon [r] de centre ([x], [y]) et de vitesse nulle. *)
-val make : float -> float -> float -> t
+(** [make x y r vx vy] Crée une balle de centre [x, y], de rayon [r] et de vitesse [vx,vy]. *)
+val make : float -> float -> float -> float -> float -> t
 
 (** [move b dx dy] Déplace la balle [b] de [dx] en abscisse et de [dy] en ordonnée. *)
 val move : t -> float -> float -> t

@@ -1,19 +1,29 @@
+type brick_kind =
+  | Weak
+  | Standard
+  | Strong
+  | Unbreakable
+
 type t =
   { rect : Rectangle.t
+  ; kind : brick_kind
   ; pv : int
-  ; xp : int
   }
 
-let make rect pv xp = { rect; pv; xp }
+let make rect kind =
+  match kind with
+  | Weak -> { rect; kind; pv = 1 }
+  | Standard -> { rect; kind; pv = 2 }
+  | Strong -> { rect; kind; pv = 3 }
+  | Unbreakable -> { rect; kind; (* résistance "infinie" *) pv = max_int }
+;;
 
 let color b =
-  match b.xp with
-  | 5 -> Graphics.green
-  | 10 -> Graphics.blue
-  | 20 -> Graphics.red
-  | 50 -> Graphics.yellow
-  | 100 -> Graphics.cyan
-  | _ -> Graphics.black
+  match b.kind with
+  | Weak -> Graphics.rgb 255 0 0
+  | Standard -> Graphics.rgb 255 255 0
+  | Strong -> Graphics.rgb 0 255 0
+  | Unbreakable -> Graphics.rgb 0 0 255
 ;;
 
 let draw b =

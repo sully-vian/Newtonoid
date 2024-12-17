@@ -6,7 +6,7 @@ type t =
   ; vy : float
   }
 
-let make x y r = { x; y; r; vx = 0.; vy = 0. }
+let make x y r vx vy = { x; y; r; vx; vy }
 let move b dx dy = { b with x = b.x +. dx; y = b.y +. dy }
 let update b dt = move b (b.vx *. dt) (b.vy *. dt)
 
