@@ -14,16 +14,30 @@ let with_brick ball brick =
   (* pas de collision *)
   else (
     (* check le côté de la collision *)
-    let vx', vy' =
+    let x', y', vx', vy' =
       if abs_float dx > abs_float dy then
         (* collision horizontale *)
-        -.ball.vx, ball.vy
+        if ball.x +. ball.r > rect.x then
+          (* collision à gauche de la brique *)
+          rect.x -. ball.r, ball.y, -.ball.vx, ball.vy
+        else if ball.x -. ball.r < rect.x +. rect.w then
+          (* collision à droite de la brique *)
+          rect.x +. rect.w +. ball.r, ball.y, -.ball.vx, ball.vy
+        else
+          ball.x, ball.y, -.ball.vx, ball.vy
+      else if (* collision verticale *)
+              ball.y -. ball.r < rect.y +. rect.h then
+        (* collision au dessus de la brique *)
+        ball.x, rect.y +. rect.h +. ball.r, ball.vx, -.ball.vy
+      else if ball.y +. ball.r > rect.y then
+        (* collision en dessous de la brique *)
+        ball.x, rect.y -. ball.r, ball.vx, -.ball.vy
       else
-        (* collision verticale *)
-        ball.vx, -.ball.vy
+        ball.x, ball.y, ball.vx, -.ball.vy
     in
     (* mise-à-jour des vitesses et perte d'un point de vie pour la brique *)
-    { ball with vx = vx'; vy = vy' }, { brick with pv = brick.pv - 1 }
+    ( { ball with x = x'; y = y'; vx = vx'; vy = vy' }
+    , { brick with pv = brick.pv - 1 } )
   )
 ;;
 
