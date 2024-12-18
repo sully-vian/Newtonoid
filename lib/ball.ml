@@ -7,9 +7,11 @@ type t =
   ; pv : int
   }
 
-let make x y r vx vy = { x; y; r; vx; vy; pv = 3 }
-let move b dx dy = { b with x = b.x +. dx; y = b.y +. dy }
-let update b dt = move b (b.vx *. dt) (b.vy *. dt)
+let make x y r = { x; y; r; vx = 200.; vy = 500.; pv = 3 }
+
+let move ball dt =
+  { ball with x = ball.x +. (ball.vx *. dt); y = ball.y +. (ball.vy *. dt) }
+;;
 
 let draw b =
   Graphics.set_color Graphics.black;

@@ -12,7 +12,7 @@ type t =
 
 let default_pv kind =
   match kind with
-  | Weak -> 2
+  | Weak -> 1
   | Standard -> 5
   | Strong -> 10
   | Unbreakable -> max_int
@@ -37,6 +37,7 @@ let color b =
 ;;
 
 let is_alive b = b.pv > 0
+let damage dmg brick = { brick with pv = brick.pv - dmg }
 
 let inner_rect b =
   let r = float_of_int b.pv /. float_of_int (default_pv b.kind) in

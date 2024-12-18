@@ -1,30 +1,32 @@
 let with_brick ball brick =
-  let open Rectangle in
-  let open Ball in
-  let open Brick in
-  let rect = brick.rect in
-  let closest_x = max rect.x (min ball.x (rect.x +. rect.w)) in
-  let closest_y = max rect.y (min ball.y (rect.y +. rect.h)) in
-  let dx = closest_x -. ball.x in
-  let dy = closest_y -. ball.y in
-  let dist2 = (dx *. dx) +. (dy *. dy) in
-  (* check si collision *)
-  if dist2 > ball.r *. ball.r then
-    (* pas de collision *)
-    ball, brick
-  else (
-    (* check le côté de la collision *)
-    let vx', vy' =
-      if abs_float dx > abs_float dy then
-        (* collision horizontale *)
-        -.ball.vx, ball.vy
-      else
-        (* collision verticale *)
-        ball.vx, -.ball.vy
-    in
-    (* mise-à-jour des vitesses et perte d'un point de vie pour la brique *)
-    { ball with vx = vx'; vy = vy' }, { brick with pv = brick.pv - 1 }
-  )
+  let rect = Brick.(brick.rect) in
+  let closest_x =
+    max Rectangle.(rect.x) (min Ball.(ball.x) Rectangle.(rect.x +. rect.w))
+  in
+  let closest_y =
+    max Rectangle.(rect.y) (min Ball.(ball.y) Rectangle.(rect.y +. rect.h))
+  in
+  Ball.(
+    let dx = closest_x -. ball.x in
+    let dy = closest_y -. ball.y in
+    let dist2 = (dx *. dx) +. (dy *. dy) in
+    (* check si collision *)
+    if dist2 > ball.r *. ball.r then
+      (* pas de collision *)
+      ball, brick
+    else (
+      (* check le côté de la collision *)
+      let vx', vy' =
+        if abs_float dx > abs_float dy then
+          (* collision horizontale *)
+          -.ball.vx, ball.vy
+        else
+          (* collision verticale *)
+          ball.vx, -.ball.vy
+      in
+      (* mise-à-jour des vitesses et perte d'un point de vie pour la brique *)
+      { ball with vx = vx'; vy = vy' }, Brick.damage 1 brick
+    ))
 ;;
 
 let update_score_and_level ball brick level score =

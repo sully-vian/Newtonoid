@@ -1,43 +1,52 @@
-type t = Ball.t * Level.t * int
+open Iterator
 
-let update box dt (ball, level, score) =
-  let ball', level', score' =
-    Collision.(with_level (with_box (Ball.update ball dt) box) level score)
-  in
-  ball', level', score'
-;;
+type t =
+  { ball : Ball.t
+  ; level : Level.t
+  ; score : int
+  ; paddle : Paddle.t
+  }
 
-let update2 box dt paddle (ball, level, score) =
+let update box dt (x_mouse, _) { ball; level; score; paddle } =
+  let paddle' = Paddle.update box x_mouse paddle in
   let ball', level', score' =
-    let after_update = Ball.update ball dt in
+    let after_update = Ball.move ball dt in
     Collision.(
       let after_paddle = with_paddle after_update paddle in
       let after_box = with_box after_paddle box in
       let after_level = with_level after_box level score in
       after_level)
   in
-  ball', level', score'
+  { ball = ball'; level = level'; score = score'; paddle = paddle' }
 ;;
 
-let is_alive (ball, _, _) = ball.Ball.pv > 0
+let is_alive { ball; level = _; score = _; paddle = _ } = Ball.(ball.pv) > 0
 
-let draw (ball, level, score) =
-  Ball.draw ball;
-  Level.draw level;
-  Graphics.(
-    set_color black;
-    moveto 10 10;
-    draw_string (Format.sprintf "Score : %d" score))
-;;
-
-let draw2 paddle (ball, level, score) =
+let draw { ball; level; score; paddle } =
   Paddle.draw paddle;
   Ball.draw ball;
   Level.draw level;
   Graphics.(
     set_color black;
-    moveto 15 20;
+    moveto 15 30;
     draw_string (Format.sprintf "Score : %d" score);
-    moveto 15 10;
-    draw_string (Format.sprintf "PV : %d" ball.pv))
+    moveto 15 15;
+    draw_string (Format.sprintf "PVs : %d" Ball.(ball.pv)))
+;;
+
+(** [unfold f flux e] est une sorte de [Flux.unfold] où [f] prend un second argument issu de [flux]. On l'utilise ici pour créer le flux d'états qui doit être généré avec les méthodes de mise-à-jour ET avec le flux de la souris. Son utilisation est moins abstraite si on explicite son type comme tel: [('mouse -> 'state -> 'state option) -> 'mouse Flux.t -> 'state -> 'state Flux.t] *)
+let rec unfold2 f flux e =
+  Tick
+    (lazy
+      (match Flux.uncons flux with
+       | None -> None
+       | Some (flux_h, flux_t) ->
+         (match f flux_h e with
+          | None -> None
+          | Some e' -> Some (e, unfold2 f flux_t e'))))
+;;
+
+let make_flux box dt mouse_flux initial_state =
+  let f mouse state = Some (update box dt mouse state) in
+  unfold2 f mouse_flux initial_state
 ;;
