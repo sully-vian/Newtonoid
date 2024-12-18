@@ -12,6 +12,8 @@ type t =
   ; supy : float
   }
 
-(** [make marge infx infy supx supy] crée une fenêtre de jeu avec les paramètres
-  donnés. *)
+(** [make marge infx infy supx supy] crée une fenêtre de jeu avec les paramètres donnés. *)
 val make : float -> float -> float -> float -> float -> t
+
+(** [draw box] dessine les contours de l'aire de jeu [box] *)
+val draw : t -> unit

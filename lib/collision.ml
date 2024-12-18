@@ -10,34 +10,20 @@ let with_brick ball brick =
   let dist2 = (dx *. dx) +. (dy *. dy) in
   (* check si collision *)
   if dist2 > ball.r *. ball.r then
+    (* pas de collision *)
     ball, brick
-  (* pas de collision *)
   else (
     (* check le côté de la collision *)
-    let x', y', vx', vy' =
+    let vx', vy' =
       if abs_float dx > abs_float dy then
         (* collision horizontale *)
-        if ball.x +. ball.r > rect.x then
-          (* collision à gauche de la brique *)
-          rect.x -. ball.r, ball.y, -.ball.vx, ball.vy
-        else if ball.x -. ball.r < rect.x +. rect.w then
-          (* collision à droite de la brique *)
-          rect.x +. rect.w +. ball.r, ball.y, -.ball.vx, ball.vy
-        else
-          ball.x, ball.y, -.ball.vx, ball.vy
-      else if (* collision verticale *)
-              ball.y -. ball.r < rect.y +. rect.h then
-        (* collision au dessus de la brique *)
-        ball.x, rect.y +. rect.h +. ball.r, ball.vx, -.ball.vy
-      else if ball.y +. ball.r > rect.y then
-        (* collision en dessous de la brique *)
-        ball.x, rect.y -. ball.r, ball.vx, -.ball.vy
+        -.ball.vx, ball.vy
       else
-        ball.x, ball.y, ball.vx, -.ball.vy
+        (* collision verticale *)
+        ball.vx, -.ball.vy
     in
     (* mise-à-jour des vitesses et perte d'un point de vie pour la brique *)
-    ( { ball with x = x'; y = y'; vx = vx'; vy = vy' }
-    , { brick with pv = brick.pv - 1 } )
+    { ball with vx = vx'; vy = vy' }, { brick with pv = brick.pv - 1 }
   )
 ;;
 
@@ -58,9 +44,7 @@ let rec with_level ball level score =
     (* collision courante *)
     let ball_after, brick_after = with_brick ball brick in
     (* reste du niveau *)
-    let final_ball, level_after, score_after =
-      with_level ball_after level_t score
-    in
+    let final_ball, level_after, score_after = with_level ball_after level_t score in
     update_score_and_level final_ball brick_after level_after score_after
 ;;
 
@@ -68,8 +52,10 @@ let bounce_x box ball =
   let open Ball in
   let open Box in
   if ball.x -. ball.r < box.infx then
+    (* Collision avec le bord gauche *)
     { ball with x = box.infx +. ball.r; vx = -.ball.vx }
   else if ball.x +. ball.r > box.supx then
+    (* Collision avec le bord droit *)
     { ball with x = box.supx -. ball.r; vx = -.ball.vx }
   else
     ball
@@ -79,8 +65,10 @@ let bounce_y box ball =
   let open Ball in
   let open Box in
   if ball.y -. ball.r < box.infy then
-    { ball with y = box.infy +. ball.r; vy = -.ball.vy }
+    (* Collision avec le bord bas *)
+    { ball with y = box.infy +. ball.r; vy = -.ball.vy; pv = ball.pv - 1 }
   else if ball.y +. ball.r > box.supy then
+    (* Collision avec le bord haut *)
     { ball with y = box.supy -. ball.r; vy = -.ball.vy }
   else
     ball
@@ -89,26 +77,12 @@ let bounce_y box ball =
 let with_box ball box = bounce_x box (bounce_y box ball)
 
 let with_paddle (ball : Ball.t) (paddle : Paddle.t) =
-  let closest_x = max paddle.x (min ball.x (paddle.x +. paddle.w)) in
-  let closest_y = max paddle.y (min ball.y (paddle.y +. paddle.h)) in
-  let dx = closest_x -. ball.x in
-  let dy = closest_y -. ball.y in
-  let dist2 = (dx *. dx) +. (dy *. dy) in
-  (* check si collision *)
-  if dist2 > ball.r *. ball.r then
+  let ball_in_range =
+    ball.x +. ball.r > paddle.x && ball.x -. ball.r < paddle.x +. paddle.w
+  in
+  let descending = ball.vy < 0. in
+  if ball_in_range && ball.y -. ball.r < paddle.y +. paddle.h && descending then
+    { ball with y = paddle.y +. paddle.h; vy = abs_float ball.vy }
+  else
     ball
-  (* pas de collision *)
-  else (
-    (* check le côté de la collision *)
-    let vx', vy' =
-      if abs_float dx > abs_float dy then
-        (* collision horizontale *)
-        -.ball.vx, ball.vy
-      else
-        (* collision verticale *)
-        ball.vx, -.ball.vy
-    in
-    (* mise-à-jour des vitesses *)
-    { ball with vx = vx'; vy = vy' }
-  )
 ;;

@@ -1,5 +1,4 @@
 profile=janestreet
 wrap-comments=true
-margin=80
 comment-check=true
 if-then-else=k-r

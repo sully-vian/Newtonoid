@@ -4,9 +4,10 @@ type t =
   ; r : float
   ; vx : float
   ; vy : float
+  ; pv : int
   }
 
-let make x y r vx vy = { x; y; r; vx; vy }
+let make x y r vx vy = { x; y; r; vx; vy; pv = 3 }
 let move b dx dy = { b with x = b.x +. dx; y = b.y +. dy }
 let update b dt = move b (b.vx *. dt) (b.vy *. dt)
 

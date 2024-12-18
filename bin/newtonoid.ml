@@ -104,9 +104,7 @@ let collide_brick () =
     Graphics.synchronize ();
     Unix.sleepf Init.dt;
     let ball', brick' =
-      Collision.with_brick
-        (Collision.with_box (Ball.update ball Init.dt) box)
-        brick
+      Collision.with_brick (Collision.with_box (Ball.update ball Init.dt) box) brick
     in
     loop ball' brick'
   in
@@ -116,13 +114,12 @@ let collide_brick () =
 ;;
 
 (* exemple de balle avec plusieurs briques *)
-(* let collide_level () = Graphics.set_window_title "Newtonoid";
-   Graphics.open_graph graphic_format; Graphics.auto_synchronize false; let rec
-   loop ball level = Graphics.clear_graph (); Level.draw level; Ball.draw ball;
-   Graphics.synchronize (); Unix.sleepf Init.dt; let ball', level' =
-   Collision.ball_level (Collision.ball_box (Ball.update ball Init.dt) box)
-   level in loop ball' level' in let ball = Ball.make 400. 300. 10. 300. 500. in
-   let level = Level.example_level in loop ball level ;; *)
+(* let collide_level () = Graphics.set_window_title "Newtonoid"; Graphics.open_graph
+   graphic_format; Graphics.auto_synchronize false; let rec loop ball level =
+   Graphics.clear_graph (); Level.draw level; Ball.draw ball; Graphics.synchronize ();
+   Unix.sleepf Init.dt; let ball', level' = Collision.ball_level (Collision.ball_box
+   (Ball.update ball Init.dt) box) level in loop ball' level' in let ball = Ball.make 400.
+   300. 10. 300. 500. in let level = Level.example_level in loop ball level ;; *)
 
 (* exemple avec le score en plus *)
 let collide_score () =
@@ -138,9 +135,36 @@ let collide_score () =
     let state' = update state in
     loop state'
   in
-  let ball = Ball.make 400. 300. 10. 300. 500. in
+  let ball = Ball.make 400. 200. 10. 300. 500. in
   let level = Level.example_level in
   loop (ball, level, 0)
 ;;
 
-let () = collide_score ()
+(* exemple avec la raquette en plus *)
+let main_paddle () =
+  let update = State.update2 box Init.dt in
+  let rec loop state paddle_flux =
+    match Flux.uncons paddle_flux with
+    | None -> ()
+    | Some (paddle, paddle_flux') ->
+      Graphics.clear_graph ();
+      Box.draw box;
+      State.draw2 paddle state;
+      Graphics.synchronize ();
+      Unix.sleepf Init.dt;
+      let state' = update paddle state in
+      if State.is_alive state then
+        loop state' paddle_flux'
+      else
+        ()
+  in
+  Graphics.set_window_title "Newtonoid";
+  Graphics.open_graph graphic_format;
+  Graphics.auto_synchronize false;
+  let ball = Ball.make 400. 200. 10. 300. 500. in
+  let level = Level.example_level in
+  let paddle = Paddle.make 20. 50. 100. 20. in
+  loop (ball, level, 0) (Paddle.make_flux box paddle)
+;;
+
+let () = main_paddle ()
