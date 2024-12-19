@@ -39,22 +39,25 @@ let color b =
 let is_alive b = b.pv > 0
 let damage dmg brick = { brick with pv = brick.pv - dmg }
 
-let inner_rect b =
-  let r = float_of_int b.pv /. float_of_int (default_pv b.kind) in
-  let x' = b.rect.x +. (b.rect.w *. (1. -. r) /. 2.) in
-  let y' = b.rect.y +. (b.rect.h *. (1. -. r) /. 2.) in
-  let w' = b.rect.w *. r in
-  let h' = b.rect.h *. r in
-  Rectangle.make x' y' w' h'
+let inner_rect brick =
+  Rectangle.(
+    let r = float_of_int brick.pv /. float_of_int (default_pv brick.kind) in
+    let x' = brick.rect.x +. (brick.rect.w *. (1. -. r) /. 2.) in
+    let y' = brick.rect.y +. (brick.rect.h *. (1. -. r) /. 2.) in
+    let w' = brick.rect.w *. r in
+    let h' = brick.rect.h *. r in
+    Rectangle.make x' y' w' h')
 ;;
 
-let draw b =
-  Graphics.set_color (color b);
-  Rectangle.draw (inner_rect b);
-  Graphics.set_color Graphics.black;
-  Graphics.draw_rect
-    (int_of_float b.rect.x)
-    (int_of_float b.rect.y)
-    (int_of_float b.rect.w)
-    (int_of_float b.rect.h)
+let draw brick =
+  let open Graphics in
+  let open Rectangle in
+  set_color (color brick);
+  Rectangle.draw (inner_rect brick);
+  set_color black;
+  draw_rect
+    (int_of_float brick.rect.x)
+    (int_of_float brick.rect.y)
+    (int_of_float brick.rect.w)
+    (int_of_float brick.rect.h)
 ;;

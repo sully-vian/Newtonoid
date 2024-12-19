@@ -24,5 +24,5 @@ val is_alive : t -> bool
 (** [damage dmg brick] renvoie une brique avec [dmg] pv en moins. *)
 val damage : int -> t -> t
 
-(** [draw b] dessine la brique [b].  Le dessin d'une brique comporte un contour noir et un rectangle interne coloré de taille proportionnelle aux pv restants. *)
+(** [draw brick] dessine la brique [brick].  Le dessin d'une brique comporte un contour noir et un rectangle interne coloré de taille proportionnelle aux pv restants. *)
 val draw : t -> unit
