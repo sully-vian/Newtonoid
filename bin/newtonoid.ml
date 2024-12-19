@@ -58,7 +58,7 @@ let main_flux () =
     open_graph graphic_format;
     auto_synchronize false);
   let level = Level.example_level in
-  let paddle = Paddle.make 20. 50. 100. 20. in
+  let paddle = Paddle.make 20. 50. 100. 20. 0. in
   let score = 0 in
   let ball =
     Ball.make

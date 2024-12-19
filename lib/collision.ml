@@ -80,13 +80,14 @@ let with_box ball box = bounce_x box (bounce_y box ball)
 
 let with_paddle (ball : Ball.t) (paddle : Paddle.t) =
   let ball_in_range =
-    (Ball.(ball.x +. ball.r) > Rectangle.(paddle.x))
-    && Ball.(ball.x -. ball.r) < Rectangle.(paddle.x +. paddle.w)
+    (Ball.(ball.x +. ball.r) > Paddle.(paddle.x))
+    && Ball.(ball.x -. ball.r) < Paddle.(paddle.x +. paddle.w)
   in
   let descending = Ball.(ball.vy < 0.) in
-  let paddle_top = Rectangle.(paddle.y +. paddle.h) in
+  let vx' = Ball.(ball.vx) +. Paddle.(paddle.vx) in
+  let paddle_top = Paddle.(paddle.y +. paddle.h) in
   if ball_in_range && Ball.(ball.y -. ball.r) < paddle_top && descending then
-    Ball.{ ball with y = paddle_top; vy = abs_float ball.vy }
+    Ball.{ ball with y = paddle_top; vx = vx'; vy = abs_float ball.vy }
   else
     ball
 ;;
