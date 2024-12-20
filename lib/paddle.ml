@@ -1,22 +1,24 @@
 open Params
 
-type t =
-  { x : float
-  ; y : float
-  ; w : float
-  ; h : float
-  ; vx : float
-  }
-
 module Make (P : PARAMS) = struct
-  let make x y w h vx = { x; y; w; h; vx }
+  module BOX = Box.Make (P)
 
-  let update box dt mouse_x paddle =
-    Box.(
+  type t =
+    { x : float
+    ; y : float
+    ; w : float
+    ; h : float
+    ; vx : float
+    }
+
+  let make = { x = P.paddle_x; y = P.paddle_y; w = P.paddle_w; h = P.paddle_h; vx = 0. }
+
+  let update box mouse_x paddle =
+    BOX.(
       let min_x = box.infx in
       let max_x = box.supx -. paddle.w in
       let x' = min max_x (max min_x (mouse_x -. (paddle.w /. 2.))) in
-      let vx = (x' -. paddle.x) /. dt in
+      let vx = (x' -. paddle.x) /. P.dt in
       { paddle with x = x'; vx })
   ;;
 

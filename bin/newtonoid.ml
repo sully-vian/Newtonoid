@@ -11,10 +11,10 @@ module Init = struct
   let dt = 1. /. 60. (* 60 Hz *)
 end
 
-let box = BOX.make 10. 10. 10. 800. 600. (* format de la fenêtre graphique *)
+let box = BOX.make (* format de la fenêtre graphique *)
 
 let graphic_format =
-  let open Box in
+  let open BOX in
   Format.sprintf
     " %dx%d+50+50"
     (int_of_float ((2. *. box.marge) +. box.supx -. box.infx))
@@ -47,29 +47,29 @@ let draw flux_etat =
 ;;
 
 let main_flux () =
-  let rec loop state_flux =
+  let rec loop state_flux current_score =
     match Flux.uncons state_flux with
-    | None -> ()
+    | None -> current_score
     | Some (state, state_flux') ->
       Graphics.clear_graph ();
       BOX.draw box;
       STATE.draw state;
       Graphics.synchronize ();
       Unix.sleepf Init.dt;
-      loop state_flux'
+      loop state_flux' STATE.(state.score)
   in
   Graphics.(
     set_window_title "Newtonoid";
     open_graph graphic_format;
     auto_synchronize false);
   let level = LEVEL.example_level in
-  let paddle = PADDLE.make 20. 50. 100. 20. 0. in
+  let paddle = PADDLE.make in
   let score = 0 in
-  let ball =
-    BALL.make Box.(box.infx +. (box.supx /. 2.)) Paddle.(paddle.y +. paddle.h +. 10.) 10.
-  in
-  let initial_state = State.{ ball; level; score; paddle } in
-  loop (STATE.make_flux box Init.dt Input.mouse initial_state)
+  let ball = BALL.make in
+  let initial_state = STATE.{ ball; level; score; paddle } in
+  let final_score = loop (STATE.make_flux box Input.mouse initial_state) 0 in
+  Format.printf "Final Score : %d@\n" final_score;
+  Graphics.close_graph ()
 ;;
 
 let () = main_flux ()

@@ -1,11 +1,11 @@
 open Params
 
-(** [Level.t] représente un niveau par une liste de briques. *)
-type t = Brick.t list
-
 module Make (P : PARAMS) : sig
+  (** [Level.t] représente un niveau par une liste de briques. *)
+  type t = Brick.Make(P).t list
+
   (** [make l] crée un niveau à partir de la liste de briques [l]. *)
-  val make : Brick.t list -> t
+  val make : Brick.Make(P).t list -> t
 
   (** [draw l] dessine le niveau [l]. *)
   val draw : t -> unit

@@ -2,16 +2,14 @@ open Params
 
 module Make (P : PARAMS) = struct
   module BRICK = Brick.Make (P)
+  module BALL = Ball.Make (P)
+  module BOX = Box.Make (P)
+  module PADDLE = Paddle.Make (P)
 
-  let with_brick ball brick =
-    let rect = Brick.(brick.rect) in
-    let closest_x =
-      max Rectangle.(rect.x) (min Ball.(ball.x) Rectangle.(rect.x +. rect.w))
-    in
-    let closest_y =
-      max Rectangle.(rect.y) (min Ball.(ball.y) Rectangle.(rect.y +. rect.h))
-    in
-    Ball.(
+  let with_brick (ball : BALL.t) (brick : BRICK.t) =
+    let closest_x = max BRICK.(brick.x) (min BALL.(ball.x) BRICK.(brick.x +. brick.w)) in
+    let closest_y = max BRICK.(brick.y) (min BALL.(ball.y) BRICK.(brick.y +. brick.h)) in
+    BALL.(
       let dx = closest_x -. ball.x in
       let dy = closest_y -. ball.y in
       let dist2 = (dx *. dx) +. (dy *. dy) in
@@ -56,8 +54,8 @@ module Make (P : PARAMS) = struct
   ;;
 
   let bounce_x box ball =
-    let open Ball in
-    let open Box in
+    let open BALL in
+    let open BOX in
     if ball.x -. ball.r < box.infx then
       (* Collision avec le bord gauche *)
       { ball with x = box.infx +. ball.r; vx = -.ball.vx }
@@ -69,8 +67,8 @@ module Make (P : PARAMS) = struct
   ;;
 
   let bounce_y box ball =
-    let open Ball in
-    let open Box in
+    let open BALL in
+    let open BOX in
     if ball.y -. ball.r < box.infy then
       (* Collision avec le bord bas *)
       { ball with y = box.infy +. ball.r; vy = -.ball.vy; pv = ball.pv - 1 }
@@ -83,17 +81,17 @@ module Make (P : PARAMS) = struct
 
   let with_box ball box = bounce_x box (bounce_y box ball)
 
-  let with_paddle (ball : Ball.t) (paddle : Paddle.t) =
+  let with_paddle (ball : BALL.t) (paddle : PADDLE.t) =
     let ball_in_range =
-      (Ball.(ball.x +. ball.r) > Paddle.(paddle.x))
-      && Ball.(ball.x -. ball.r) < Paddle.(paddle.x +. paddle.w)
+      (BALL.(ball.x +. ball.r) > PADDLE.(paddle.x))
+      && BALL.(ball.x -. ball.r) < PADDLE.(paddle.x +. paddle.w)
     in
-    let descending = Ball.(ball.vy < 0.) in
-    let vx = Ball.(ball.vx) +. (Paddle.(paddle.vx) /. 10.) in
-    let vy = abs_float Ball.(ball.vy) in
-    let paddle_top = Paddle.(paddle.y +. paddle.h) in
-    if ball_in_range && Ball.(ball.y -. ball.r) < paddle_top && descending then
-      Ball.{ ball with y = paddle_top; vx; vy }
+    let descending = BALL.(ball.vy < 0.) in
+    let vx = BALL.(ball.vx) +. (PADDLE.(paddle.vx) /. 10.) in
+    let vy = abs_float BALL.(ball.vy) in
+    let paddle_top = PADDLE.(paddle.y +. paddle.h) in
+    if ball_in_range && BALL.(ball.y -. ball.r) < paddle_top && descending then
+      BALL.{ ball with y = paddle_top; vx; vy }
     else
       ball
   ;;

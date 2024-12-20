@@ -1,19 +1,21 @@
 open Params
 
-type t =
-  { x : float
-  ; y : float
-  ; r : float
-  ; vx : float
-  ; vy : float
-  ; pv : int
-  }
-
 module Make (P : PARAMS) = struct
-  let make x y r = { x; y; r; vx = 200.; vy = 200.; pv = 3 }
+  type t =
+    { x : float
+    ; y : float
+    ; r : float
+    ; vx : float
+    ; vy : float
+    ; pv : int
+    }
 
-  let move ball dt =
-    { ball with x = ball.x +. (ball.vx *. dt); y = ball.y +. (ball.vy *. dt) }
+  let make =
+    { x = P.ball_x; y = P.ball_y; r = P.ball_r; vx = 200.; vy = 200.; pv = P.ball_pv }
+  ;;
+
+  let move ball =
+    { ball with x = ball.x +. (ball.vx *. P.dt); y = ball.y +. (ball.vy *. P.dt) }
   ;;
 
   let draw b =

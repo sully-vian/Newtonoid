@@ -1,15 +1,22 @@
 open Params
 
-type t =
-  { marge : float
-  ; infx : float
-  ; infy : float
-  ; supx : float
-  ; supy : float
-  }
-
 module Make (P : PARAMS) = struct
-  let make marge infx infy supx supy = { marge; infx; infy; supx; supy }
+  type t =
+    { marge : float
+    ; infx : float
+    ; infy : float
+    ; supx : float
+    ; supy : float
+    }
+
+  let make =
+    { marge = P.box_marge
+    ; infx = P.box_infx
+    ; infy = P.box_infy
+    ; supx = P.box_supx
+    ; supy = P.box_supy
+    }
+  ;;
 
   let draw box =
     Graphics.set_color Graphics.black;
