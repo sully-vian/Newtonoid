@@ -1,3 +1,5 @@
+open Params
+
 (** [Ball.t] représente une balle.
     - [x] est l'abscisse du centre de la balle.
     - [y] est l'ordonnée du centre de la balle.
@@ -14,11 +16,13 @@ type t =
   ; pv : int
   }
 
-(** [make x y r] Crée une balle de centre [x, y], de rayon [r] et de vitesse nulle avec 3 points de vie. *)
-val make : float -> float -> float -> t
+module Make (P : PARAMS) : sig
+  (** [make x y r] Crée une balle de centre [x, y], de rayon [r] et de vitesse nulle avec 3 points de vie. *)
+  val make : float -> float -> float -> t
 
-(** [move ball dt] déplace la balle [ball] en fonction du temps écoulé [dt] en secondes. *)
-val move : t -> float -> t
+  (** [move ball dt] déplace la balle [ball] en fonction du temps écoulé [dt] en secondes. *)
+  val move : t -> float -> t
 
-(** [draw ball] Dessine en cercle noir la balle [ball] sur l'écran. *)
-val draw : t -> unit
+  (** [draw ball] Dessine en cercle noir la balle [ball] sur l'écran. *)
+  val draw : t -> unit
+end

@@ -1,3 +1,5 @@
+open Params
+
 (** [Box.t] représente la fenêtre de jeu avec
     - [marge] : marge entre la fenêtre et l'écran
     - [infx] : abscisse minimale
@@ -12,8 +14,10 @@ type t =
   ; supy : float
   }
 
-(** [make marge infx infy supx supy] crée une fenêtre de jeu avec les paramètres donnés. *)
-val make : float -> float -> float -> float -> float -> t
+module Make (P : PARAMS) : sig
+  (** [make marge infx infy supx supy] crée une fenêtre de jeu avec les paramètres donnés. *)
+  val make : float -> float -> float -> float -> float -> t
 
-(** [draw box] dessine les contours de l'aire de jeu [box] *)
-val draw : t -> unit
+  (** [draw box] dessine les contours de l'aire de jeu [box] *)
+  val draw : t -> unit
+end

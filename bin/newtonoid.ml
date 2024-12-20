@@ -1,12 +1,17 @@
 (* ouvre la bibliotheque de modules definis dans lib/ *)
 open Libnewtonoid
 open Iterator
+module STATE = State.Make (Params.Default)
+module BALL = Ball.Make (Params.Default)
+module BOX = Box.Make (Params.Default)
+module LEVEL = Level.Make (Params.Default)
+module PADDLE = Paddle.Make (Params.Default)
 
 module Init = struct
   let dt = 1. /. 60. (* 60 Hz *)
 end
 
-let box = Box.make 10. 10. 10. 800. 600. (* format de la fenêtre graphique *)
+let box = BOX.make 10. 10. 10. 800. 600. (* format de la fenêtre graphique *)
 
 let graphic_format =
   let open Box in
@@ -47,8 +52,8 @@ let main_flux () =
     | None -> ()
     | Some (state, state_flux') ->
       Graphics.clear_graph ();
-      Box.draw box;
-      State.draw state;
+      BOX.draw box;
+      STATE.draw state;
       Graphics.synchronize ();
       Unix.sleepf Init.dt;
       loop state_flux'
@@ -57,17 +62,14 @@ let main_flux () =
     set_window_title "Newtonoid";
     open_graph graphic_format;
     auto_synchronize false);
-  let level = Level.example_level in
-  let paddle = Paddle.make 20. 50. 100. 20. 0. in
+  let level = LEVEL.example_level in
+  let paddle = PADDLE.make 20. 50. 100. 20. 0. in
   let score = 0 in
   let ball =
-    Ball.make
-      Box.(box.infx +. (box.supx /. 2.))
-      Rectangle.(paddle.y +. paddle.h +. 10.)
-      10.
+    BALL.make Box.(box.infx +. (box.supx /. 2.)) Paddle.(paddle.y +. paddle.h +. 10.) 10.
   in
   let initial_state = State.{ ball; level; score; paddle } in
-  loop (State.make_flux box Init.dt Input.mouse initial_state)
+  loop (STATE.make_flux box Init.dt Input.mouse initial_state)
 ;;
 
 let () = main_flux ()
