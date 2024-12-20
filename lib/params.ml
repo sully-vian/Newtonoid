@@ -1,6 +1,4 @@
 module type PARAMS = sig
-  val ball_x : float
-  val ball_y : float
   val ball_r : float
   val ball_pv : int
   val box_marge : float
@@ -26,8 +24,6 @@ module type PARAMS = sig
 end
 
 module Default : PARAMS = struct
-  let ball_x = 400.
-  let ball_y = 300.
   let ball_r = 10.
   let ball_pv = 3
   let box_marge = 10.

@@ -1,7 +1,5 @@
 module type PARAMS = sig
   (* Ball params *)
-  val ball_x : float
-  val ball_y : float
   val ball_r : float
   val ball_pv : int
 

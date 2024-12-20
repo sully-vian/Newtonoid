@@ -62,11 +62,12 @@ let main_flux () =
     set_window_title "Newtonoid";
     open_graph graphic_format;
     auto_synchronize false);
-  let level = LEVEL.example_level in
-  let paddle = PADDLE.make in
-  let score = 0 in
   let ball = BALL.make in
-  let initial_state = STATE.{ ball; level; score; paddle } in
+  let level = LEVEL.example_level in
+  let score = 0 in
+  let paddle = PADDLE.make in
+  let status = STATE.Init in
+  let initial_state = STATE.{ ball; level; score; paddle; status } in
   let final_score = loop (STATE.make_flux box Input.mouse initial_state) 0 in
   Format.printf "Final Score : %d@\n" final_score;
   Graphics.close_graph ()

@@ -11,7 +11,15 @@ module Make (P : PARAMS) = struct
     }
 
   let make =
-    { x = P.ball_x; y = P.ball_y; r = P.ball_r; vx = 200.; vy = 200.; pv = P.ball_pv }
+    let paddle_middle = P.paddle_x +. (P.paddle_w /. 2.) in
+    let paddle_top = P.paddle_y +. P.paddle_h in
+    { x = paddle_middle
+    ; y = paddle_top +. P.ball_r
+    ; r = P.ball_r
+    ; vx = 0.
+    ; vy = 200.
+    ; pv = P.ball_pv
+    }
   ;;
 
   let move ball =
