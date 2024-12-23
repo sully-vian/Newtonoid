@@ -29,8 +29,6 @@ module Make (P : PARAMS) = struct
         (int_of_float paddle.x)
         (int_of_float paddle.y)
         (int_of_float paddle.w)
-        (int_of_float paddle.h);
-      moveto 100 20;
-      draw_string Format.(sprintf "vx: %f" paddle.vx))
+        (int_of_float paddle.h))
   ;;
 end

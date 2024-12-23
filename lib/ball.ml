@@ -27,9 +27,8 @@ module Make (P : PARAMS) = struct
   ;;
 
   let draw b =
-    Graphics.set_color Graphics.black;
-    Graphics.fill_circle (int_of_float b.x) (int_of_float b.y) (int_of_float b.r);
-    Graphics.moveto 200 20;
-    Graphics.draw_string (Format.sprintf "ballvx: %f" b.vx)
+    Graphics.(
+      set_color black;
+      fill_circle (int_of_float b.x) (int_of_float b.y) (int_of_float b.r))
   ;;
 end
