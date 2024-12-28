@@ -21,7 +21,7 @@ module Make (P : PARAMS) = struct
     | Weak -> P.brick_weak_pv
     | Standard -> P.brick_standard_pv
     | Strong -> P.brick_strong_pv
-    | Unbreakable -> P.brick_unbreakable_pv
+    | Unbreakable -> 1 (* symbolique *)
   ;;
 
   let xp brick =
@@ -29,21 +29,27 @@ module Make (P : PARAMS) = struct
     | Weak -> P.brick_weak_xp
     | Standard -> P.brick_standard_xp
     | Strong -> P.brick_strong_xp
-    | Unbreakable -> P.brick_unbreakable_xp
+    | Unbreakable -> 0 (* symbolique *)
   ;;
 
   let make x y w h kind = { x; y; w; h; kind; pv = default_pv kind }
 
-  let color b =
-    match b.kind with
+  let color brick =
+    match brick.kind with
     | Weak -> Graphics.green
     | Standard -> Graphics.blue
     | Strong -> Graphics.red
     | Unbreakable -> Graphics.black
   ;;
 
-  let is_alive b = b.pv > 0
-  let damage dmg brick = { brick with pv = brick.pv - dmg }
+  let is_alive brick = brick.pv > 0
+
+  let damage dmg brick =
+    if brick.kind = Unbreakable then
+      brick
+    else
+      { brick with pv = brick.pv - dmg }
+  ;;
 
   let inner_rect brick =
     let r = float_of_int brick.pv /. float_of_int (default_pv brick.kind) in
@@ -63,6 +69,22 @@ module Make (P : PARAMS) = struct
     draw_rect
       (int_of_float brick.x)
       (int_of_float brick.y)
+      (int_of_float brick.w)
+      (int_of_float brick.h)
+  ;;
+
+  let draw_shadow brick =
+    let open Graphics in
+    set_color P.shadow_color;
+    let x', y', w', h' = inner_rect brick in
+    fill_rect
+      (int_of_float x' + 10)
+      (int_of_float y' - 10)
+      (int_of_float w')
+      (int_of_float h');
+    draw_rect
+      (int_of_float brick.x + 10)
+      (int_of_float brick.y - 10)
       (int_of_float brick.w)
       (int_of_float brick.h)
   ;;

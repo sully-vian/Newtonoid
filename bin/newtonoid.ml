@@ -52,8 +52,8 @@ let main_flux () =
     | None -> current_score
     | Some (state, state_flux') ->
       Graphics.clear_graph ();
-      BOX.draw box;
       STATE.draw state;
+      BOX.draw box;
       Graphics.synchronize ();
       Unix.sleepf Init.dt;
       loop state_flux' STATE.(state.score)

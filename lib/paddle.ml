@@ -24,10 +24,20 @@ module Make (P : PARAMS) = struct
 
   let draw paddle =
     Graphics.(
-      set_color black;
+      set_color P.paddle_color;
       fill_rect
         (int_of_float paddle.x)
         (int_of_float paddle.y)
+        (int_of_float paddle.w)
+        (int_of_float paddle.h))
+  ;;
+
+  let draw_shadow paddle =
+    Graphics.(
+      set_color P.shadow_color;
+      fill_rect
+        (int_of_float paddle.x + 10)
+        (int_of_float paddle.y - 10)
         (int_of_float paddle.w)
         (int_of_float paddle.h))
   ;;

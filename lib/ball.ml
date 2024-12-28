@@ -17,7 +17,7 @@ module Make (P : PARAMS) = struct
     ; y = paddle_top +. P.ball_r
     ; r = P.ball_r
     ; vx = 0.
-    ; vy = 200.
+    ; vy = P.ball_init_vy
     ; pv = P.ball_pv
     }
   ;;
@@ -26,9 +26,40 @@ module Make (P : PARAMS) = struct
     { ball with x = ball.x +. (ball.vx *. P.dt); y = ball.y +. (ball.vy *. P.dt) }
   ;;
 
-  let draw b =
+  let bound_speed ball =
+    (* on borne vx *)
+    let vx' =
+      if ball.vx < -.P.ball_max_vx then
+        -.P.ball_max_vx
+      else if ball.vx > P.ball_max_vx then
+        P.ball_max_vx
+      else
+        ball.vx
+    in
+    (* on borne vy *)
+    let vy' =
+      if ball.vy < -.P.ball_max_vy then
+        -.P.ball_max_vy
+      else if ball.vy > P.ball_max_vy then
+        P.ball_max_vy
+      else
+        ball.vy
+    in
+    { ball with vx = vx'; vy = vy' }
+  ;;
+
+  let draw ball =
     Graphics.(
-      set_color black;
-      fill_circle (int_of_float b.x) (int_of_float b.y) (int_of_float b.r))
+      set_color P.ball_color;
+      fill_circle (int_of_float ball.x) (int_of_float ball.y) (int_of_float ball.r))
+  ;;
+
+  let draw_shadow ball =
+    Graphics.(
+      set_color P.shadow_color;
+      fill_circle
+        (int_of_float ball.x + 10)
+        (int_of_float ball.y - 10)
+        (int_of_float ball.r))
   ;;
 end

@@ -8,6 +8,7 @@ module Make (P : PARAMS) = struct
   let make l = l
   let make_brick x y kind = BRICK.make x y P.brick_w P.brick_h kind
   let draw l = List.iter BRICK.draw l
+  let draw_shadow l = List.iter BRICK.draw_shadow l
 
   let example_level =
     [ make_brick 50. 500. BRICK.Strong

@@ -19,24 +19,46 @@ module Make (P : PARAMS) = struct
         ball, brick
       else (
         (* check le côté de la collision *)
-        let vx', vy' =
+        let x', y', vx', vy' =
           if abs_float dx > abs_float dy then
             (* collision horizontale *)
-            -.ball.vx, ball.vy
+            if ball.vx > 0. then
+              ( (* collision à gauche *)
+                brick.BRICK.x -. ball.r -. 1.
+              , ball.y
+              , -.abs_float ball.vx
+              , ball.vy )
+            else
+              ( (* collision à droite *)
+                brick.BRICK.x +. brick.BRICK.w +. ball.r +. 1.
+              , ball.y
+              , abs_float ball.vx
+              , ball.vy )
+          else if (* collision verticale *)
+                  ball.vy > 0. then
+            ( (* collision en bas *)
+              ball.x
+            , brick.BRICK.y -. ball.r -. 1.
+            , ball.vx
+            , -.abs_float ball.vy )
           else
-            (* collision verticale *)
-            ball.vx, -.ball.vy
+            ( (* collision en haut *)
+              ball.x
+            , brick.BRICK.y +. brick.BRICK.h +. ball.r +. 1.
+            , ball.vx
+            , abs_float ball.vy )
         in
         (* mise-à-jour des vitesses et perte d'un point de vie pour la brique *)
-        { ball with vx = vx'; vy = vy' }, BRICK.damage 1 brick
+        { ball with x = x'; y = y'; vx = vx'; vy = vy' }, BRICK.damage 1 brick
       ))
   ;;
 
   let update_score_and_level ball brick level score =
     if BRICK.is_alive brick then
+      (* si la brique est vivante, on la garde *)
       ball, brick :: level, score
     else (
-      (* On exclue la brique lorsqu'elle est détruite *)
+      (* sinon, on récupère son xp *)
       let xp = BRICK.xp brick in
       ball, level, score + xp
     )
@@ -81,17 +103,26 @@ module Make (P : PARAMS) = struct
 
   let with_box ball box = bounce_x box (bounce_y box ball)
 
-  let with_paddle (ball : BALL.t) (paddle : PADDLE.t) =
-    let ball_in_range =
+  let with_paddle ball paddle =
+    (* check si balle dans la zone de la raquette *)
+    let in_range_x =
       (BALL.(ball.x +. ball.r) > PADDLE.(paddle.x))
       && BALL.(ball.x -. ball.r) < PADDLE.(paddle.x +. paddle.w)
     in
+    let in_range_y = BALL.(ball.y +. ball.r) > PADDLE.(paddle.y) in
     let descending = BALL.(ball.vy < 0.) in
-    let vx = BALL.(ball.vx) +. (PADDLE.(paddle.vx) /. 10.) in
-    let vy = abs_float BALL.(ball.vy) in
+    (* impulsion donnée par la raquette *)
+    let impulse = BALL.(ball.vx) +. (PADDLE.(paddle.vx) /. 10.) in
+    (* balle rebondit vers le haut *)
     let paddle_top = PADDLE.(paddle.y +. paddle.h) in
-    if ball_in_range && BALL.(ball.y -. ball.r) < paddle_top && descending then
-      BALL.{ ball with y = paddle_top; vx; vy }
+    if in_range_x && in_range_y && BALL.(ball.y -. ball.r) < paddle_top && descending then
+      BALL.(
+        bound_speed
+          { ball with
+            y = paddle_top
+          ; vx = ball.vx +. impulse
+          ; vy = abs_float ball.vy (* la balle rebondit vers le haut *)
+          })
     else
       ball
   ;;

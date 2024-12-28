@@ -18,4 +18,7 @@ module Make (P : PARAMS) : sig
 
   (** [draw p] dessine la raquette [p] en noir. *)
   val draw : t -> unit
+
+  (** [draw_shadow p] dessine l'ombre de la raquette [p] en gris. *)
+  val draw_shadow : t -> unit
 end

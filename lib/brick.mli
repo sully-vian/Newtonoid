@@ -32,4 +32,7 @@ module Make (P : PARAMS) : sig
 
   (** [draw brick] dessine la brique [brick].  Le dessin d'une brique comporte un contour noir et un rectangle interne coloré de taille proportionnelle aux pv restants. *)
   val draw : t -> unit
+
+  (** [draw_shadow brick] dessine l'ombre de la brique. *)
+  val draw_shadow : t -> unit
 end

@@ -26,7 +26,7 @@ module Make (P : PARAMS) = struct
       let ball' =
         let x' = PADDLE.(paddle'.x +. (paddle'.w /. 2.)) in
         let y' = PADDLE.(paddle'.y +. paddle'.h) +. BALL.(ball.r) in
-        BALL.{ ball with x = x'; y = y' }
+        BALL.{ ball with x = x'; y = y'; vx = 0.; vy = P.ball_init_vy }
       in
       let status' =
         if click then
@@ -79,14 +79,25 @@ module Make (P : PARAMS) = struct
   ;;
 
   let draw { ball; level; score; paddle; _ } =
+    LEVEL.draw_shadow level;
+    PADDLE.draw_shadow paddle;
+    BALL.draw_shadow ball;
+    LEVEL.draw level;
     PADDLE.draw paddle;
     BALL.draw ball;
-    LEVEL.draw level;
     Graphics.(
       set_color black;
       moveto 15 30;
       draw_string (Format.sprintf "Score : %d" score);
       moveto 15 15;
-      draw_string (Format.sprintf "PVs : %d" BALL.(ball.pv)))
+      draw_string (Format.sprintf "PVs : %d" BALL.(ball.pv));
+      moveto 100 15;
+      draw_string (Format.sprintf "ball x: %d" (int_of_float BALL.(ball.x)));
+      moveto 100 30;
+      draw_string (Format.sprintf "ball y: %d" (int_of_float BALL.(ball.y)));
+      moveto 175 15;
+      draw_string (Format.sprintf "ball vx: %d" (int_of_float BALL.(ball.vx)));
+      moveto 175 30;
+      draw_string (Format.sprintf "ball vy: %d" (int_of_float BALL.(ball.vy))))
   ;;
 end

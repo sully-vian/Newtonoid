@@ -23,6 +23,12 @@ module Make (P : PARAMS) : sig
   (** [move ball] déplace la balle [ball] en fonction de sa vitesse. *)
   val move : t -> t
 
-  (** [draw ball] Dessine en cercle noir la balle [ball] sur l'écran. *)
+  (** [bound_speed ball] renvoie la balle [ball] avec des vitesses rrespectant les bornes définies dans [P] *)
+  val bound_speed : t -> t
+
+  (** [draw ball] dessine un cercle centré sur les coordonnées de la balle [ball] de la couleur choisie dans [P]. *)
   val draw : t -> unit
+
+  (** [draw_shadow ball] dessine  *)
+  val draw_shadow : t -> unit
 end
