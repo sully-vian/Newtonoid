@@ -1,4 +1,4 @@
-profile=janestreet
-wrap-comments=true
-comment-check=true
-if-then-else=k-r
+profile = janestreet
+wrap-comments = true
+comment-check = true
+if-then-else = k-r

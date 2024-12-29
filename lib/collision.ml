@@ -51,7 +51,6 @@ module Make (P : PARAMS) = struct
         (* mise-à-jour des vitesses et perte d'un point de vie pour la brique *)
         { ball with x = x'; y = y'; vx = vx'; vy = vy' }, BRICK.damage 1 brick
       ))
-  ;;
 
   let update_score_and_level ball brick level score =
     if BRICK.is_alive brick then
@@ -62,7 +61,6 @@ module Make (P : PARAMS) = struct
       let xp = BRICK.xp brick in
       ball, level, score + xp
     )
-  ;;
 
   let rec with_level ball level score =
     match level with
@@ -73,7 +71,6 @@ module Make (P : PARAMS) = struct
       (* reste du niveau *)
       let final_ball, level_after, score_after = with_level ball_after level_t score in
       update_score_and_level final_ball brick_after level_after score_after
-  ;;
 
   let bounce_x box ball =
     let open BALL in
@@ -86,7 +83,6 @@ module Make (P : PARAMS) = struct
       { ball with x = box.supx -. ball.r; vx = -.ball.vx }
     else
       ball
-  ;;
 
   let bounce_y box ball =
     let open BALL in
@@ -99,7 +95,6 @@ module Make (P : PARAMS) = struct
       { ball with y = box.supy -. ball.r; vy = -.ball.vy }
     else
       ball
-  ;;
 
   let with_box ball box = bounce_x box (bounce_y box ball)
 
@@ -125,5 +120,4 @@ module Make (P : PARAMS) = struct
           })
     else
       ball
-  ;;
 end

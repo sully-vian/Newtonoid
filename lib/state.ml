@@ -52,7 +52,6 @@ module Make (P : PARAMS) = struct
           Init
       in
       { ball = ball'; level = level'; score = score'; paddle = paddle'; status = status' }
-  ;;
 
   let is_alive { ball; _ } = BALL.(ball.pv) > 0
 
@@ -66,7 +65,6 @@ module Make (P : PARAMS) = struct
            (match f flux_h e with
             | None -> None
             | Some e' -> Some (e, unfold2 f flux_t e'))))
-  ;;
 
   let make_flux box mouse_flux initial_state =
     let f mouse state =
@@ -76,7 +74,6 @@ module Make (P : PARAMS) = struct
         None
     in
     unfold2 f mouse_flux initial_state
-  ;;
 
   let draw { ball; level; score; paddle; _ } =
     LEVEL.draw_shadow level;
@@ -99,5 +96,4 @@ module Make (P : PARAMS) = struct
       draw_string (Format.sprintf "ball vx: %d" (int_of_float BALL.(ball.vx)));
       moveto 175 30;
       draw_string (Format.sprintf "ball vy: %d" (int_of_float BALL.(ball.vy))))
-  ;;
 end

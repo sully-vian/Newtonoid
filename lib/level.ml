@@ -68,5 +68,4 @@ module Make (P : PARAMS) = struct
     ; make_brick 650. 410. BRICK.Weak
     ; make_brick 700. 410. BRICK.Weak
     ]
-  ;;
 end

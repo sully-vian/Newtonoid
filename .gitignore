@@ -1,2 +1,13 @@
 _build/
 .vscode/
+
+# LaTeX
+*.aux
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.nlo

@@ -24,6 +24,10 @@ module type PARAMS = sig
   val dt : float
   val ball_color : Graphics.color
   val paddle_color : Graphics.color
+  val brick_weak_color : Graphics.color
+  val brick_standard_color : Graphics.color
+  val brick_strong_color : Graphics.color
+  val brick_unbreakable_color : Graphics.color
   val shadow_color : Graphics.color
 end
 
@@ -53,5 +57,9 @@ module Default : PARAMS = struct
   let dt = 1. /. 60.
   let ball_color = Graphics.black
   let paddle_color = Graphics.black
-  let shadow_color = Graphics.rgb 200 200 200
+  let brick_weak_color = Graphics.green
+  let brick_standard_color = Graphics.blue
+  let brick_strong_color = Graphics.red
+  let brick_unbreakable_color = Graphics.black
+  let shadow_color = Graphics.rgb 225 225 225
 end

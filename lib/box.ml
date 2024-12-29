@@ -16,7 +16,6 @@ module Make (P : PARAMS) = struct
     ; supx = P.box_supx
     ; supy = P.box_supy
     }
-  ;;
 
   let draw box =
     Graphics.(
@@ -26,5 +25,4 @@ module Make (P : PARAMS) = struct
         (int_of_float box.infy)
         (int_of_float (box.supx -. box.infx))
         (int_of_float (box.supy -. box.infy)))
-  ;;
 end

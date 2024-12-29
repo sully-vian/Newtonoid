@@ -40,7 +40,6 @@ module Flux : Intf with type 'a t = 'a flux = struct
          | None, _ -> None
          | _, None -> None
          | Some (tf, qf), Some (tx, qx) -> Some (tf tx, apply qf qx)))
-  ;;
 
   (** [unfold f e] crée un flux à partir d'une fonction [f] et d'une valeur initiale [e]. Le retour ressemble à [<<f e; f (f e); f (f (f e)); ...>>] *)
   let rec unfold f e =
@@ -49,7 +48,6 @@ module Flux : Intf with type 'a t = 'a flux = struct
         (match f e with
          | None -> None
          | Some (t, e') -> Some (t, unfold f e')))
-  ;;
 
   (** [filter p flux] filtre les éléments du flux [flux] selon le prédicat [p] *)
   let rec filter p flux =
@@ -62,7 +60,6 @@ module Flux : Intf with type 'a t = 'a flux = struct
              Some (t, filter p q)
            else
              uncons (filter p q)))
-  ;;
 
   (** [append flux1 flux2] concatène les flux [flux1] et [flux2] *)
   let rec append flux1 flux2 =
@@ -71,7 +68,6 @@ module Flux : Intf with type 'a t = 'a flux = struct
         (match uncons flux1 with
          | None -> uncons flux2
          | Some (t1, q1) -> Some (t1, append q1 flux2)))
-  ;;
 
   (** [constant c] crée un flux infini de constantes [c] *)
   let constant c = unfold (fun () -> Some (c, ())) ()

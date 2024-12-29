@@ -37,6 +37,10 @@ module type PARAMS = sig
   (* Colors *)
   val ball_color : Graphics.color
   val paddle_color : Graphics.color
+  val brick_weak_color : Graphics.color
+  val brick_standard_color : Graphics.color
+  val brick_strong_color : Graphics.color
+  val brick_unbreakable_color : Graphics.color
   val shadow_color : Graphics.color
 end
 
