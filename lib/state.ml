@@ -8,8 +8,10 @@ module Make (P : PARAMS) = struct
   module COLLISION = Collision.Make (P)
 
   type game_status =
-    | Playing
     | Init
+    | Playing
+    | GameOver
+    | Victory
 
   type t =
     { ball : BALL.t
@@ -29,6 +31,7 @@ module Make (P : PARAMS) = struct
         BALL.{ ball with x = x'; y = y'; vx = 0.; vy = P.ball_init_vy }
       in
       let status' =
+        (* début du jeu si click *)
         if click then
           Playing
         else
@@ -36,6 +39,7 @@ module Make (P : PARAMS) = struct
       in
       { ball = ball'; level; score; paddle = paddle'; status = status' }
     | Playing ->
+      (* m-à-j de la raquette puis collisions et test de survie *)
       let paddle' = PADDLE.update box x_mouse paddle in
       let ball', level', score' =
         let after_update = BALL.move ball in
@@ -49,9 +53,13 @@ module Make (P : PARAMS) = struct
         if BALL.(ball.pv == ball'.pv) then
           Playing
         else
+          (* si une vie est perdue, on replace la balle sur la raquette *)
           Init
       in
       { ball = ball'; level = level'; score = score'; paddle = paddle'; status = status' }
+    | _ ->
+      (* on ne met pas à jour l'état lorsque le jeu est fini *)
+      { ball; level; score; paddle; status }
 
   let is_alive { ball; _ } = BALL.(ball.pv) > 0
 
@@ -68,26 +76,73 @@ module Make (P : PARAMS) = struct
 
   let make_flux box mouse_flux initial_state =
     let f mouse state =
-      if is_alive state then
-        Some (update box mouse state)
+      if not (is_alive state) then
+        Some (update box mouse { state with status = GameOver })
+      else if LEVEL.is_finished state.level then
+        Some (update box mouse { state with status = Victory })
       else
-        None
+        Some (update box mouse state)
     in
     unfold2 f mouse_flux initial_state
 
-  let draw { ball; level; score; paddle; _ } =
+  let draw_score score =
+    Graphics.(
+      set_color black;
+      moveto 15 30;
+      draw_string (Format.sprintf "Score : %d" score))
+
+  let draw_pv ball =
+    Graphics.(
+      set_color black;
+      moveto 15 15;
+      draw_string (Format.sprintf "PVs : %d" BALL.(ball.pv)))
+
+  (* TODO: changer la taille du texte *)
+  let draw_game_over score =
+    Graphics.(
+      let line1 = "Game Over !" in
+      let line2 = Format.sprintf "Final Score: %d" score in
+      let line1_w, _ = text_size line1 in
+      let line2_w, _ = text_size line2 in
+      let middle_x = int_of_float (P.box_supx -. P.box_infx) / 2 in
+      let middle_y = int_of_float (P.box_supy -. P.box_infy) / 2 in
+      set_color red;
+      moveto (middle_x - (line1_w / 2)) (middle_y + 10);
+      draw_string line1;
+      moveto (middle_x - (line2_w / 2)) (middle_y - 10);
+      draw_string line2)
+
+  (* TODO: changer la taille du texte *)
+  let draw_victory score =
+    Graphics.(
+      let line1 = "Victory !" in
+      let line2 = Format.sprintf "Final Score: %d" score in
+      let line1_w, _ = text_size line1 in
+      let line2_w, _ = text_size line2 in
+      let middle_x = int_of_float (P.box_supx -. P.box_infx) / 2 in
+      let middle_y = int_of_float (P.box_supy -. P.box_infy) / 2 in
+      set_color green;
+      moveto (middle_x - (line1_w / 2)) (middle_y + 10);
+      draw_string line1;
+      moveto (middle_x - (line2_w / 2)) (middle_y - 10);
+      draw_string line2)
+
+  let draw { ball; level; score; paddle; status } =
     LEVEL.draw_shadow level;
     PADDLE.draw_shadow paddle;
     BALL.draw_shadow ball;
     LEVEL.draw level;
     PADDLE.draw paddle;
     BALL.draw ball;
+    draw_score score;
+    draw_pv ball;
+    if status = GameOver then
+      draw_game_over score
+    else if status = Victory then
+      draw_victory score;
+    (* Debug *)
     Graphics.(
       set_color black;
-      moveto 15 30;
-      draw_string (Format.sprintf "Score : %d" score);
-      moveto 15 15;
-      draw_string (Format.sprintf "PVs : %d" BALL.(ball.pv));
       moveto 100 15;
       draw_string (Format.sprintf "ball x: %d" (int_of_float BALL.(ball.x)));
       moveto 100 30;

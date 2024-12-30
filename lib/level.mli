@@ -7,6 +7,9 @@ module Make (P : PARAMS) : sig
   (** [make l] crée un niveau à partir de la liste de briques [l]. *)
   val make : Brick.Make(P).t list -> t
 
+  (** [is_finished level] retourne [true] ssi le niveau [level] est vide ou ne contient que des briques incassables. *)
+  val is_finished : t -> bool
+
   (** [draw l] dessine le niveau [l]. *)
   val draw : t -> unit
 

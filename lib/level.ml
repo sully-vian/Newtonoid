@@ -7,6 +7,16 @@ module Make (P : PARAMS) = struct
 
   let make l = l
   let make_brick x y kind = BRICK.make x y P.brick_w P.brick_h kind
+
+  let rec is_finished level =
+    match level with
+    | [] -> true
+    | h :: t ->
+      if BRICK.(h.kind = Unbreakable) then
+        is_finished t
+      else
+        false
+
   let draw l = List.iter BRICK.draw l
   let draw_shadow l = List.iter BRICK.draw_shadow l
 

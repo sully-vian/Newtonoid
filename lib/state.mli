@@ -4,8 +4,10 @@ open Params
 module Make (P : PARAMS) : sig
   (** [game_status] représente le status du jeu (en cours ou initialisation) *)
   type game_status =
-    | Playing
     | Init
+    | Playing
+    | GameOver
+    | Victory
 
   (** [State.t] représente un état du jeu à partir de la balle, du niveau et du
   score *)
