@@ -31,35 +31,50 @@ module type PARAMS = sig
   val shadow_color : Graphics.color
 end
 
-module Default : PARAMS = struct
-  let ball_r = 10.
-  let ball_pv = 3
-  let ball_init_vy = 200.
-  let ball_max_vx = 500.
-  let ball_max_vy = 200.
-  let box_marge = 10.
-  let box_infx = 10.
-  let box_infy = 10.
-  let box_supx = 800.
-  let box_supy = 600.
-  let brick_weak_pv = 1
-  let brick_standard_pv = 3
-  let brick_strong_pv = 5
-  let brick_weak_xp = 5
-  let brick_standard_xp = 10
-  let brick_strong_xp = 20
-  let brick_w = 50.
-  let brick_h = 30.
-  let paddle_x = 20.
-  let paddle_y = 50.
-  let paddle_w = 100.
-  let paddle_h = 5.
-  let dt = 1. /. 60.
-  let ball_color = Graphics.black
-  let paddle_color = Graphics.black
-  let brick_weak_color = Graphics.green
-  let brick_standard_color = Graphics.blue
-  let brick_strong_color = Graphics.red
-  let brick_unbreakable_color = Graphics.black
-  let shadow_color = Graphics.rgb 225 225 225
+module Make (ConfigFile : sig
+  val filename : string
+end) : PARAMS = struct
+  (* liste associant les clés aux valeurs *)
+  let config =
+    let chan = open_in ConfigFile.filename in
+    let key_value_pairs = Utils.parse_key_value_pairs chan in
+    key_value_pairs
+  ;;
+
+  (* méthodes de parsing *)
+  let assoc_int key = Utils.assoc_int config key
+  let assoc_float key = Utils.assoc_float config key
+  let assoc_color key = Utils.assoc_color config key
+
+  (* asssignation des paramètres *)
+  let ball_r = assoc_float "ball_r"
+  let ball_pv = assoc_int "ball_pv"
+  let ball_init_vy = assoc_float "ball_init_vy"
+  let ball_max_vx = assoc_float "ball_max_vx"
+  let ball_max_vy = assoc_float "ball_max_vy"
+  let box_marge = assoc_float "box_marge"
+  let box_infx = assoc_float "box_infx"
+  let box_infy = assoc_float "box_infy"
+  let box_supx = assoc_float "box_supx"
+  let box_supy = assoc_float "box_supy"
+  let brick_weak_pv = assoc_int "brick_weak_pv"
+  let brick_standard_pv = assoc_int "brick_standard_pv"
+  let brick_strong_pv = assoc_int "brick_strong_pv"
+  let brick_weak_xp = assoc_int "brick_weak_xp"
+  let brick_standard_xp = assoc_int "brick_standard_xp"
+  let brick_strong_xp = assoc_int "brick_strong_xp"
+  let brick_w = assoc_float "brick_w"
+  let brick_h = assoc_float "brick_h"
+  let paddle_x = assoc_float "paddle_x"
+  let paddle_y = assoc_float "paddle_y"
+  let paddle_w = assoc_float "paddle_w"
+  let paddle_h = assoc_float "paddle_h"
+  let dt = assoc_float "dt"
+  let ball_color = assoc_color "ball_color"
+  let paddle_color = assoc_color "paddle_color"
+  let brick_weak_color = assoc_color "brick_weak_color"
+  let brick_standard_color = assoc_color "brick_standard_color"
+  let brick_strong_color = assoc_color "brick_strong_color"
+  let brick_unbreakable_color = assoc_color "brick_unbreakable_color"
+  let shadow_color = assoc_color "shadow_color"
 end

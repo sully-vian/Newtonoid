@@ -17,7 +17,7 @@ module Make (P : PARAMS) : sig
     ; pv : int
     }
 
-  (** [make] crée une balle avce les paramètres de [P] et de vitesse nulle. *)
+  (** [make] crée une balle avec les paramètres de [P] et de vitesse nulle. *)
   val make : t
 
   (** [move ball] déplace la balle [ball] en fonction de sa vitesse et de [P.dt]. *)

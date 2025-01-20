@@ -21,6 +21,10 @@ module Make (P : PARAMS) = struct
     ; status : game_status
     }
 
+  let make level =
+    { ball = BALL.make; level; score = 0; paddle = PADDLE.make; status = Init }
+  ;;
+
   let update box (x_mouse, click) { ball; level; score; paddle; status } =
     match status with
     | Init ->
@@ -60,6 +64,7 @@ module Make (P : PARAMS) = struct
     | _ ->
       (* on ne met pas à jour l'état lorsque le jeu est fini *)
       { ball; level; score; paddle; status }
+  ;;
 
   let is_alive { ball; _ } = BALL.(ball.pv) > 0
 
@@ -73,6 +78,7 @@ module Make (P : PARAMS) = struct
            (match f flux_h e with
             | None -> None
             | Some e' -> Some (e, unfold2 f flux_t e'))))
+  ;;
 
   let make_flux box mouse_flux initial_state =
     let f mouse state =
@@ -84,18 +90,21 @@ module Make (P : PARAMS) = struct
         Some (update box mouse state)
     in
     unfold2 f mouse_flux initial_state
+  ;;
 
   let draw_score score =
     Graphics.(
       set_color black;
       moveto 15 30;
       draw_string (Format.sprintf "Score : %d" score))
+  ;;
 
   let draw_pv ball =
     Graphics.(
       set_color black;
       moveto 15 15;
       draw_string (Format.sprintf "PVs : %d" BALL.(ball.pv)))
+  ;;
 
   (* TODO: changer la taille du texte *)
   let draw_game_over score =
@@ -111,6 +120,7 @@ module Make (P : PARAMS) = struct
       draw_string line1;
       moveto (middle_x - (line2_w / 2)) (middle_y - 10);
       draw_string line2)
+  ;;
 
   (* TODO: changer la taille du texte *)
   let draw_victory score =
@@ -126,6 +136,7 @@ module Make (P : PARAMS) = struct
       draw_string line1;
       moveto (middle_x - (line2_w / 2)) (middle_y - 10);
       draw_string line2)
+  ;;
 
   let draw { ball; level; score; paddle; status } =
     LEVEL.draw_shadow level;
@@ -151,4 +162,5 @@ module Make (P : PARAMS) = struct
       draw_string (Format.sprintf "ball vx: %d" (int_of_float BALL.(ball.vx)));
       moveto 175 30;
       draw_string (Format.sprintf "ball vy: %d" (int_of_float BALL.(ball.vy))))
+  ;;
 end

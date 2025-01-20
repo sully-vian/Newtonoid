@@ -44,4 +44,6 @@ module type PARAMS = sig
   val shadow_color : Graphics.color
 end
 
-module Default : PARAMS
+module Make (ConfigFile : sig
+  val filename : string
+end) : PARAMS

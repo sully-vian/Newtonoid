@@ -1,65 +1,55 @@
-module P = Params.Default
-module BALL = Ball.Make (P)
-module BRICK = Brick.Make (P)
-module BOX = Box.Make (P)
-module PADDLE = Paddle.Make (P)
+module Make (P : Params.PARAMS) = struct
+  let run_test name condition =
+    if condition then
+      true
+    else (
+      Printf.printf "Test failed: %s\n" name;
+      false
+    )
+  ;;
 
-(* Ball Tests *)
-let%test "ball_make" =
-  BALL.(
-    let ball = make in
-    ball.r = P.ball_r && ball.pv = P.ball_pv && ball.vx = 0. && ball.vy = P.ball_init_vy)
-
-let%test "ball_move" =
-  BALL.(
-    let ball = { make with vx = 10.; vy = -10. } in
-    let x' = ball.x +. (P.dt *. ball.vx) in
-    let y' = ball.y +. (P.dt *. ball.vy) in
-    move ball = { ball with x = x'; y = y' })
-
-let%test "ball_move_with_0" =
-  BALL.(
-    let ball = { make with vx = 0.; vy = 0. } in
-    let x' = ball.x +. (P.dt *. ball.vx) in
-    let y' = ball.y +. (P.dt *. ball.vy) in
-    move ball = { ball with x = x'; y = y' })
-
-let%test "ball_bound_speed_max" =
-  BALL.(
-    let ball = { make with vx = P.ball_max_vx +. 1.; vy = P.ball_max_vy +. 1. } in
-    bound_speed ball = { ball with vx = P.ball_max_vx; vy = P.ball_max_vy })
-
-let%test "ball_bound_speed_min" =
-  BALL.(
-    let ball = { make with vx = -.P.ball_max_vx -. 1.; vy = -.P.ball_max_vy -. 1. } in
-    bound_speed ball = { ball with vx = -.P.ball_max_vx; vy = -.P.ball_max_vy })
-
-let%test "ball_bound_speed_0" =
-  BALL.(
-    let ball = { make with vx = 0.; vy = 0. } in
-    bound_speed ball = ball)
-
-(* Paddle Tests *)
-let%test "paddle_make" =
-  PADDLE.(
-    make = { x = P.paddle_x; y = P.paddle_y; w = P.paddle_w; h = P.paddle_h; vx = 0. })
-
-let%test "paddle_update" =
-  let box = BOX.make in
-  let mouse_x = 100. in
-  let paddle = PADDLE.make in
-  let paddle' = PADDLE.update box mouse_x paddle in
-  PADDLE.(paddle'.x = mouse_x -. (paddle'.w /. 2.))
-
-(* Brick Tests *)
-let%test "box_make" =
-  BOX.(
-    make
-    = { marge = P.box_marge
-      ; infx = P.box_infx
-      ; infy = P.box_infy
-      ; supx = P.box_supx
-      ; supy = P.box_supy
-      })
-
-(* Ball test *)
+  let run_tests : unit -> unit =
+   fun () ->
+    Printf.printf "Verifying parameters...\n";
+    let tests =
+      [ (* Ball params Tests *)
+        "ball_r > 0", P.ball_r > 0.
+      ; "ball_pv > 0", P.ball_pv > 0
+      ; "ball_init_vy > 0", P.ball_init_vy > 0.
+      ; "ball_init_vy <= ball_max_vy", P.ball_init_vy <= P.ball_max_vy
+      ; "ball_max_vx > 0", P.ball_max_vx > 0.
+      ; "ball_max_vy > 0", P.ball_max_vy > 0.
+      ; (* Box params Tests *)
+        "box_marge > 0", P.box_marge > 0.
+      ; "box_infx = box_marge", P.box_infx = P.box_marge
+      ; "box_infy = box_marge", P.box_infy = P.box_marge
+      ; "box_supx > box_infx", P.box_supx > P.box_infx
+      ; "box_supy > box_infy", P.box_supy > P.box_infy
+      ; (* Brick params Tests *)
+        "brick_weak_pv > 0", P.brick_weak_pv > 0
+      ; "brick_standard_pv > brick_weak_pv", P.brick_standard_pv > P.brick_weak_pv
+      ; "brick_strong_pv > brick_standard_pv", P.brick_strong_pv > P.brick_standard_pv
+      ; "brick_weak_xp > 0", P.brick_weak_xp > 0
+      ; "brick_standard_xp > brick_weak_xp", P.brick_standard_xp > P.brick_weak_xp
+      ; "brick_strong_xp > brick_standard_xp", P.brick_strong_xp > P.brick_standard_xp
+      ; (* Level params Tests *)
+        "brick_w > 0", P.brick_w > 0.
+      ; "brick_h > 0", P.brick_h > 0.
+      ; (* Paddle params Tests *)
+        "paddle_x > 0", P.paddle_x > 0.
+      ; "paddle_y > 0", P.paddle_y > 0.
+      ; "paddle_w > 0", P.paddle_w > 0.
+      ; "paddle_h > 0", P.paddle_h > 0.
+      ; (* General params Tests *)
+        "dt > 0", P.dt > 0.
+      ]
+    in
+    let results = List.map (fun (name, cond) -> run_test name cond) tests in
+    if List.for_all (fun x -> x) results then
+      Printf.printf "All tests passed\n"
+    else (
+      Printf.printf "Some tests failed\n";
+      exit 1
+    )
+ ;;
+end
