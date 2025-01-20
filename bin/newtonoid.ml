@@ -19,6 +19,7 @@ let graphic_format =
     " %dx%d+50+50"
     (int_of_float ((2. *. box.marge) +. box.supx -. box.infx))
     (int_of_float ((2. *. box.marge) +. box.supy -. box.infy))
+;;
 
 (* TODO *)
 let draw_state _etat = failwith "A DEFINIR"
@@ -43,6 +44,13 @@ let draw flux_etat =
   let score = loop flux_etat 0 in
   Format.printf "Score final : %d@\n" score;
   Graphics.close_graph ()
+;;
+
+let get_level () =
+  match Array.length Sys.argv with
+  | 1 -> LEVEL.example_level
+  | _ -> LEVEL.load_level Sys.argv.(1)
+;;
 
 let main_flux () =
   let rec loop state_flux current_score =
@@ -61,7 +69,7 @@ let main_flux () =
     open_graph graphic_format;
     auto_synchronize false);
   let ball = BALL.make in
-  let level = LEVEL.example_level in
+  let level = get_level () in
   let score = 0 in
   let paddle = PADDLE.make in
   let status = STATE.Init in
@@ -69,5 +77,7 @@ let main_flux () =
   let final_score = loop (STATE.make_flux box Input.mouse initial_state) 0 in
   Format.printf "Final Score : %d@\n" final_score;
   Graphics.close_graph ()
+;;
 
 let () = main_flux ()
+

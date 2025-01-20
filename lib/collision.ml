@@ -107,7 +107,7 @@ module Make (P : PARAMS) = struct
     let in_range_y = BALL.(ball.y +. ball.r) > PADDLE.(paddle.y) in
     let descending = BALL.(ball.vy < 0.) in
     (* impulsion donnée par la raquette *)
-    let impulse = BALL.(ball.vx) +. (PADDLE.(paddle.vx) /. 10.) in
+    let impulse = (PADDLE.(paddle.vx) /. 10.) in
     (* balle rebondit vers le haut *)
     let paddle_top = PADDLE.(paddle.y +. paddle.h) in
     if in_range_x && in_range_y && BALL.(ball.y -. ball.r) < paddle_top && descending then

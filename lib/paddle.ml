@@ -18,8 +18,9 @@ module Make (P : PARAMS) = struct
       let min_x = box.infx in
       let max_x = box.supx -. paddle.w in
       let x' = min max_x (max min_x (mouse_x -. (paddle.w /. 2.))) in
-      let vx = (x' -. paddle.x) /. P.dt in
-      { paddle with x = x'; vx })
+      let vx' = (x' -. paddle.x) /. P.dt in
+      { paddle with x = x'; vx = vx' })
+  ;;
 
   let draw paddle =
     Graphics.(
@@ -29,6 +30,7 @@ module Make (P : PARAMS) = struct
         (int_of_float paddle.y)
         (int_of_float paddle.w)
         (int_of_float paddle.h))
+  ;;
 
   let draw_shadow paddle =
     Graphics.(
@@ -38,4 +40,5 @@ module Make (P : PARAMS) = struct
         (int_of_float paddle.y - 10)
         (int_of_float paddle.w)
         (int_of_float paddle.h))
+  ;;
 end

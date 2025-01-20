@@ -18,4 +18,7 @@ module Make (P : PARAMS) : sig
 
   (** [example_level] est un exemple de niveau. *)
   val example_level : t
+
+  (** [load_level filename] charge un niveau à partir d'un fichier. *)
+  val load_level : string -> t
 end
