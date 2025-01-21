@@ -33,7 +33,7 @@ module Make (P : PARAMS) = struct
          | '@' -> aux (x +. P.brick_w) y (make_brick x y BRICK.Unbreakable :: acc) t
          | '#' -> aux (x +. P.brick_w) y (make_brick x y BRICK.Strong :: acc) t
          | '=' -> aux (x +. P.brick_w) y (make_brick x y BRICK.Standard :: acc) t
-         | '-' -> aux (x +. P.brick_w) y (make_brick x y BRICK.Weak :: acc) t
+         | '+' -> aux (x +. P.brick_w) y (make_brick x y BRICK.Weak :: acc) t
          | '.' -> aux (x +. P.brick_w) y acc t
          | _ -> failwith ("Invalid character in level file:" ^ String.make 1 c))
     in
