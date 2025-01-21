@@ -1,6 +1,3 @@
-(** [char_list_of_channel chan] lit tous les caractères d'un canal d'entrée [chan] et les renvoie sous forme de liste. *)
-val char_list_of_channel : in_channel -> char list
-
 (** [parse_key_value_pairs chan] lit les paires clé-valeur d'un canal d'entrée [chan] et les renvoie sous forme de liste. *)
 val parse_key_value_pairs : in_channel -> (string * string) list
 

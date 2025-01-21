@@ -1,11 +1,3 @@
-let rec char_list_of_channel chan =
-  try
-    let c = input_char chan in
-    c :: char_list_of_channel chan
-  with
-  | End_of_file -> []
-;;
-
 let parse_key_value_pairs chan =
   let rec aux chan acc =
     try

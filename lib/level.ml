@@ -23,18 +23,19 @@ module Make (P : PARAMS) = struct
 
   let load_level filename =
     let chan = open_in filename in
-    let chars = Utils.char_list_of_channel chan in
+    let chars = LoadLevel.char_list_of_channel chan in
     let rec aux x y acc chars =
       match chars with
       | [] -> acc
       | c :: t ->
         (match c with
-         | '\n' -> aux 0. (y -. P.brick_h) acc t
+         | '|' | '-' -> aux x y acc t (* on ignore les bords *)
+         | '\n' -> aux P.box_infx (y -. P.brick_h) acc t
          | '@' -> aux (x +. P.brick_w) y (make_brick x y BRICK.Unbreakable :: acc) t
          | '#' -> aux (x +. P.brick_w) y (make_brick x y BRICK.Strong :: acc) t
          | '=' -> aux (x +. P.brick_w) y (make_brick x y BRICK.Standard :: acc) t
          | '+' -> aux (x +. P.brick_w) y (make_brick x y BRICK.Weak :: acc) t
-         | '.' -> aux (x +. P.brick_w) y acc t
+         | ' ' -> aux (x +. P.brick_w) y acc t
          | _ -> failwith ("Invalid character in level file:" ^ String.make 1 c))
     in
     aux 0. P.box_supy [] chars

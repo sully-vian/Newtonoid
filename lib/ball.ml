@@ -54,7 +54,7 @@ module Make (P : PARAMS) = struct
     Graphics.(
       set_color P.shadow_color;
       fill_circle
-        (int_of_float ball.x + 10)
-        (int_of_float ball.y - 10)
+        (int_of_float ball.x + P.shadow_offset_x)
+        (int_of_float ball.y + P.shadow_offset_y)
         (int_of_float ball.r))
 end

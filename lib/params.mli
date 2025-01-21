@@ -7,13 +7,6 @@ module type PARAMS = sig
   val ball_max_vy : float
   val ball_bounce_factor : float
 
-  (* Box params *)
-  val box_marge : float
-  val box_infx : float
-  val box_infy : float
-  val box_supx : float
-  val box_supy : float
-
   (* Brick params *)
   val brick_weak_pv : int
   val brick_standard_pv : int
@@ -34,6 +27,15 @@ module type PARAMS = sig
 
   (* General params *)
   val dt : float
+  val shadow_offset_x : int
+  val shadow_offset_y : int
+
+  (* Box params *)
+  val box_marge : float
+  val box_infx : float
+  val box_infy : float
+  val box_supx : float
+  val box_supy : float
 
   (* Colors *)
   val ball_color : Graphics.color
@@ -42,9 +44,16 @@ module type PARAMS = sig
   val brick_standard_color : Graphics.color
   val brick_strong_color : Graphics.color
   val brick_unbreakable_color : Graphics.color
+  val bg_color : Graphics.color
   val shadow_color : Graphics.color
+  val text_color : Graphics.color
+  val borders_color : Graphics.color
 end
 
 module Make (ConfigFile : sig
-  val filename : string
+  (* les valeurs de la config *)
+  val config_filename : string
+
+  (* le niveau pour calculer la taille de la fenêtre *)
+  val level_filename : string
 end) : PARAMS

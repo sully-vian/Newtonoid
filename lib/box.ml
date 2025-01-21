@@ -19,7 +19,7 @@ module Make (P : PARAMS) = struct
 
   let draw box =
     Graphics.(
-      set_color black;
+      set_color P.borders_color;
       draw_rect
         (int_of_float box.infx)
         (int_of_float box.infy)

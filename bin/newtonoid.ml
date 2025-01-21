@@ -14,16 +14,15 @@ let main_flux () =
   (* instanciation des modules *)
   let module PFile =
     Params.Make (struct
-      let filename = Sys.argv.(2)
+      let config_filename = Sys.argv.(2)
+      let level_filename = Sys.argv.(1)
     end)
   in
   let module T = Tests.Make (PFile) in
   T.run_tests ();
   let module STATE = State.Make (PFile) in
-  let module BALL = Ball.Make (PFile) in
   let module BOX = Box.Make (PFile) in
   let module LEVEL = Level.Make (PFile) in
-  let module PADDLE = Paddle.Make (PFile) in
   let box = BOX.make in
   (* format de la fenêtre graphique *)
   let graphic_format =
@@ -39,6 +38,9 @@ let main_flux () =
     | None -> current_score
     | Some (state, state_flux') ->
       Graphics.clear_graph ();
+      (* draw background *)
+      Graphics.set_color PFile.bg_color;
+      Graphics.fill_rect 0 0 (Graphics.size_x ()) (Graphics.size_y ());
       STATE.draw state;
       BOX.draw box;
       Graphics.synchronize ();

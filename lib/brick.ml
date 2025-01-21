@@ -60,7 +60,7 @@ module Make (P : PARAMS) = struct
     set_color (color brick);
     let x', y', w', h' = inner_rect brick in
     fill_rect (int_of_float x') (int_of_float y') (int_of_float w') (int_of_float h');
-    set_color black;
+    set_color P.borders_color;
     draw_rect
       (int_of_float brick.x)
       (int_of_float brick.y)
@@ -72,13 +72,13 @@ module Make (P : PARAMS) = struct
     set_color P.shadow_color;
     let x', y', w', h' = inner_rect brick in
     fill_rect
-      (int_of_float x' + 10)
-      (int_of_float y' - 10)
+      (int_of_float x' + P.shadow_offset_x)
+      (int_of_float y' + P.shadow_offset_y)
       (int_of_float w')
       (int_of_float h');
     draw_rect
-      (int_of_float brick.x + 10)
-      (int_of_float brick.y - 10)
+      (int_of_float brick.x + P.shadow_offset_x)
+      (int_of_float brick.y + P.shadow_offset_y)
       (int_of_float brick.w)
       (int_of_float brick.h)
 end

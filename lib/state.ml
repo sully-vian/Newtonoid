@@ -94,14 +94,14 @@ module Make (P : PARAMS) = struct
 
   let draw_score score =
     Graphics.(
-      set_color black;
+      set_color P.text_color;
       moveto 15 30;
       draw_string (Format.sprintf "Score : %d" score))
   ;;
 
   let draw_pv ball =
     Graphics.(
-      set_color black;
+      set_color P.text_color;
       moveto 15 15;
       draw_string (Format.sprintf "PVs : %d" BALL.(ball.pv)))
   ;;
@@ -153,7 +153,7 @@ module Make (P : PARAMS) = struct
       draw_victory score;
     (* Debug *)
     Graphics.(
-      set_color black;
+      set_color P.text_color;
       moveto 100 15;
       draw_string (Format.sprintf "ball x: %d" (int_of_float BALL.(ball.x)));
       moveto 100 30;
