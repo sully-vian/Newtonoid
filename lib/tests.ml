@@ -19,6 +19,7 @@ module Make (P : Params.PARAMS) = struct
       ; "ball_init_vy <= ball_max_vy", P.ball_init_vy <= P.ball_max_vy
       ; "ball_max_vx > 0", P.ball_max_vx > 0.
       ; "ball_max_vy > 0", P.ball_max_vy > 0.
+      ; "ball_bounce_factor > 0", P.ball_bounce_factor > 0.
       ; (* Box params Tests *)
         "box_marge > 0", P.box_marge > 0.
       ; "box_infx = box_marge", P.box_infx = P.box_marge

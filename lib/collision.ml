@@ -26,13 +26,13 @@ module Make (P : PARAMS) = struct
               ( (* collision à gauche *)
                 brick.BRICK.x -. ball.r -. 1.
               , ball.y
-              , -.abs_float ball.vx
+              , -.abs_float ball.vx *. P.ball_bounce_factor
               , ball.vy )
             else
               ( (* collision à droite *)
                 brick.BRICK.x +. brick.BRICK.w +. ball.r +. 1.
               , ball.y
-              , abs_float ball.vx
+              , abs_float ball.vx *. P.ball_bounce_factor
               , ball.vy )
           else if (* collision verticale *)
                   ball.vy > 0. then
@@ -40,17 +40,18 @@ module Make (P : PARAMS) = struct
               ball.x
             , brick.BRICK.y -. ball.r -. 1.
             , ball.vx
-            , -.abs_float ball.vy )
+            , -.abs_float ball.vy *. P.ball_bounce_factor )
           else
             ( (* collision en haut *)
               ball.x
             , brick.BRICK.y +. brick.BRICK.h +. ball.r +. 1.
             , ball.vx
-            , abs_float ball.vy )
+            , abs_float ball.vy *. P.ball_bounce_factor )
         in
         (* mise-à-jour des vitesses et perte d'un point de vie pour la brique *)
-        { ball with x = x'; y = y'; vx = vx'; vy = vy' }, BRICK.damage 1 brick
+        bound_speed { ball with x = x'; y = y'; vx = vx'; vy = vy' }, BRICK.damage 1 brick
       ))
+  ;;
 
   let update_score_and_level ball brick level score =
     if BRICK.is_alive brick then
@@ -61,6 +62,7 @@ module Make (P : PARAMS) = struct
       let xp = BRICK.xp brick in
       ball, level, score + xp
     )
+  ;;
 
   let rec with_level ball level score =
     match level with
@@ -71,30 +73,35 @@ module Make (P : PARAMS) = struct
       (* reste du niveau *)
       let final_ball, level_after, score_after = with_level ball_after level_t score in
       update_score_and_level final_ball brick_after level_after score_after
+  ;;
 
   let bounce_x box ball =
     let open BALL in
     let open BOX in
+    bound_speed(
     if ball.x -. ball.r < box.infx then
       (* Collision avec le bord gauche *)
-      { ball with x = box.infx +. ball.r; vx = -.ball.vx }
+      { ball with x = box.infx +. ball.r; vx = -.ball.vx *. P.ball_bounce_factor }
     else if ball.x +. ball.r > box.supx then
       (* Collision avec le bord droit *)
-      { ball with x = box.supx -. ball.r; vx = -.ball.vx }
+      { ball with x = box.supx -. ball.r; vx = -.ball.vx *. P.ball_bounce_factor }
     else
-      ball
+      ball)
+  ;;
 
   let bounce_y box ball =
     let open BALL in
     let open BOX in
-    if ball.y -. ball.r < box.infy then
-      (* Collision avec le bord bas *)
-      { ball with y = box.infy +. ball.r; vy = -.ball.vy; pv = ball.pv - 1 }
-    else if ball.y +. ball.r > box.supy then
-      (* Collision avec le bord haut *)
-      { ball with y = box.supy -. ball.r; vy = -.ball.vy }
-    else
-      ball
+    bound_speed
+      (if ball.y -. ball.r < box.infy then
+         (* Collision avec le bord bas *)
+         { ball with y = box.infy +. ball.r; vy = -.ball.vy *. P.ball_bounce_factor; pv = ball.pv - 1 }
+       else if ball.y +. ball.r > box.supy then
+         (* Collision avec le bord haut *)
+         { ball with y = box.supy -. ball.r; vy = -.ball.vy *. P.ball_bounce_factor }
+       else
+         ball)
+  ;;
 
   let with_box ball box = bounce_x box (bounce_y box ball)
 
@@ -107,17 +114,19 @@ module Make (P : PARAMS) = struct
     let in_range_y = BALL.(ball.y +. ball.r) > PADDLE.(paddle.y) in
     let descending = BALL.(ball.vy < 0.) in
     (* impulsion donnée par la raquette *)
-    let impulse = (PADDLE.(paddle.vx) /. 10.) in
+    let impulse = PADDLE.(paddle.vx) /. 10. in
     (* balle rebondit vers le haut *)
     let paddle_top = PADDLE.(paddle.y +. paddle.h) in
-    if in_range_x && in_range_y && BALL.(ball.y -. ball.r) < paddle_top && descending then
-      BALL.(
-        bound_speed
-          { ball with
-            y = paddle_top
-          ; vx = ball.vx +. impulse
-          ; vy = abs_float ball.vy (* la balle rebondit vers le haut *)
-          })
-    else
-      ball
+    BALL.(
+      bound_speed
+        (if in_range_x && in_range_y && BALL.(ball.y -. ball.r) < paddle_top && descending
+         then
+           { ball with
+             y = paddle_top
+           ; vx = ball.vx +. impulse
+           ; vy = abs_float ball.vy *. P.ball_bounce_factor (* la balle rebondit vers le haut *)
+           }
+         else
+           ball))
+  ;;
 end

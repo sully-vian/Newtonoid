@@ -1,5 +1,12 @@
 # Newtonoid
 
+## TODO
+
+- quadtree (partition quadrillée qui force le découpage du quadtree)
+- passage au niveau suivant
+- sons
+- nouveaux niveaux (c moi)
+
 ## Pour compiler
 
 ```bash

@@ -4,6 +4,7 @@ module type PARAMS = sig
   val ball_init_vy : float
   val ball_max_vx : float
   val ball_max_vy : float
+  val ball_bounce_factor : float
   val box_marge : float
   val box_infx : float
   val box_infy : float
@@ -52,6 +53,7 @@ end) : PARAMS = struct
   let ball_init_vy = assoc_float "ball_init_vy"
   let ball_max_vx = assoc_float "ball_max_vx"
   let ball_max_vy = assoc_float "ball_max_vy"
+  let ball_bounce_factor = assoc_float "ball_bounce_factor"
   let box_marge = assoc_float "box_marge"
   let box_infx = assoc_float "box_infx"
   let box_infy = assoc_float "box_infy"

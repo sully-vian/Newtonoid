@@ -5,6 +5,7 @@ module type PARAMS = sig
   val ball_init_vy : float
   val ball_max_vx : float
   val ball_max_vy : float
+  val ball_bounce_factor : float
 
   (* Box params *)
   val box_marge : float

@@ -32,12 +32,8 @@ let main_flux () =
       " %dx%d+50+50"
       (int_of_float ((2. *. box.marge) +. box.supx -. box.infx))
       (int_of_float ((2. *. box.marge) +. box.supy -. box.infy))
-  and ball = BALL.make
-  and level = LEVEL.load_level Sys.argv.(1)
-  and score = 0
-  and paddle = PADDLE.make
-  and status = STATE.Init in
-  let initial_state = STATE.{ ball; level; score; paddle; status } in
+  and level = LEVEL.load_level Sys.argv.(1) in
+  let initial_state = STATE.make level in
   let rec loop state_flux current_score =
     match Flux.uncons state_flux with
     | None -> current_score
