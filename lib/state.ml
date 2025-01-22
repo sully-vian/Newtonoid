@@ -25,10 +25,10 @@ module Make (P : PARAMS) = struct
     { ball = BALL.make; level; score = 0; paddle = PADDLE.make; status = Init }
   ;;
 
-  let update box (x_mouse, click) { ball; level; score; paddle; status } =
+  let update (x_mouse, click) { ball; level; score; paddle; status } =
     match status with
     | Init ->
-      let paddle' = PADDLE.update box x_mouse paddle in
+      let paddle' = PADDLE.update x_mouse paddle in
       let ball' =
         let x' = PADDLE.(paddle'.x +. (paddle'.w /. 2.)) in
         let y' = PADDLE.(paddle'.y +. paddle'.h) +. BALL.(ball.r) in
@@ -44,12 +44,12 @@ module Make (P : PARAMS) = struct
       { ball = ball'; level; score; paddle = paddle'; status = status' }
     | Playing ->
       (* m-à-j de la raquette puis collisions et test de survie *)
-      let paddle' = PADDLE.update box x_mouse paddle in
+      let paddle' = PADDLE.update x_mouse paddle in
       let ball', level', score' =
         let after_update = BALL.move ball in
         COLLISION.(
           let after_paddle = with_paddle after_update paddle in
-          let after_box = with_box after_paddle box in
+          let after_box = with_box after_paddle in
           let after_level = with_level after_box level score in
           after_level)
       in
@@ -80,14 +80,14 @@ module Make (P : PARAMS) = struct
             | Some e' -> Some (e, unfold2 f flux_t e'))))
   ;;
 
-  let make_flux box mouse_flux initial_state =
+  let make_flux mouse_flux initial_state =
     let f mouse state =
       if not (is_alive state) then
-        Some (update box mouse { state with status = GameOver })
+        Some (update mouse { state with status = GameOver })
       else if LEVEL.is_finished state.level then
-        Some (update box mouse { state with status = Victory })
+        Some (update mouse { state with status = Victory })
       else
-        Some (update box mouse state)
+        Some (update mouse state)
     in
     unfold2 f mouse_flux initial_state
   ;;

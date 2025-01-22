@@ -51,7 +51,7 @@ let main_flux () =
     set_window_title "Newtonoid";
     open_graph graphic_format;
     auto_synchronize false);
-  let final_score = loop (STATE.make_flux box Input.mouse initial_state) 0 in
+  let final_score = loop (STATE.make_flux Input.mouse initial_state) 0 in
   Format.printf "Final Score : %d@\n" final_score;
   Graphics.close_graph ()
 ;;

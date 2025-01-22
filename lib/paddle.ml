@@ -1,7 +1,6 @@
 open Params
 
 module Make (P : PARAMS) = struct
-  module BOX = Box.Make (P)
 
   type t =
     { x : float
@@ -13,13 +12,12 @@ module Make (P : PARAMS) = struct
 
   let make = { x = P.paddle_x; y = P.paddle_y; w = P.paddle_w; h = P.paddle_h; vx = 0. }
 
-  let update box mouse_x paddle =
-    BOX.(
-      let min_x = box.infx in
-      let max_x = box.supx -. paddle.w in
-      let x' = min max_x (max min_x (mouse_x -. (paddle.w /. 2.))) in
-      let vx' = (x' -. paddle.x) /. P.dt in
-      { paddle with x = x'; vx = vx' })
+  let update mouse_x paddle =
+    let min_x = P.box_infx in
+    let max_x = P.box_supx -. paddle.w in
+    let x' = min max_x (max min_x (mouse_x -. (paddle.w /. 2.))) in
+    let vx' = (x' -. paddle.x) /. P.dt in
+    { paddle with x = x'; vx = vx' }
   ;;
 
   let draw paddle =

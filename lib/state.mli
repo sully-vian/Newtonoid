@@ -22,14 +22,14 @@ module Make (P : PARAMS) : sig
   (** [make level] crée un état initial du jeu avec les paramètres de [P] et le niveau [level] *)
   val make : Level.Make(P).t -> t
 
-  (** [update box mouse state] met à jour l'état du jeu [state] (collisions, score etc) pour l'état de la souris [mouse] et fenêtre de jeu [box]. *)
-  val update : Box.Make(P).t -> float * bool -> t -> t
+  (** [update mouse state] met à jour l'état du jeu [state] (collisions, score etc) pour l'état de la souris [mouse]. *)
+  val update : float * bool -> t -> t
 
   (** [is_alive state] renvoie [true] si la balle a encore des points de vie et false sinon. *)
   val is_alive : t -> bool
 
-  (** [make_flux box mouse_flux initial_state] crée le flux complet d'états à partir des différents éléments de l'environnement [box], [mouse_flux] et l'état initial [initial_state] *)
-  val make_flux : Box.Make(P).t -> (float * bool) Flux.t -> t -> t Flux.t
+  (** [make_flux mouse_flux initial_state] crée le flux complet d'états à partir du flux de la souris [mouse_flux] et l'état initial [initial_state] *)
+  val make_flux : (float * bool) Flux.t -> t -> t Flux.t
 
   (** [draw state] dessine l'état [state] *)
   val draw : t -> unit

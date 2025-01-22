@@ -3,7 +3,6 @@ open Params
 module Make (P : PARAMS) = struct
   module BRICK = Brick.Make (P)
   module BALL = Ball.Make (P)
-  module BOX = Box.Make (P)
   module PADDLE = Paddle.Make (P)
 
   let with_brick (ball : BALL.t) (brick : BRICK.t) =
@@ -75,35 +74,37 @@ module Make (P : PARAMS) = struct
       update_score_and_level final_ball brick_after level_after score_after
   ;;
 
-  let bounce_x box ball =
+  let bounce_x ball =
     let open BALL in
-    let open BOX in
-    bound_speed(
-    if ball.x -. ball.r < box.infx then
-      (* Collision avec le bord gauche *)
-      { ball with x = box.infx +. ball.r; vx = -.ball.vx *. P.ball_bounce_factor }
-    else if ball.x +. ball.r > box.supx then
-      (* Collision avec le bord droit *)
-      { ball with x = box.supx -. ball.r; vx = -.ball.vx *. P.ball_bounce_factor }
-    else
-      ball)
-  ;;
-
-  let bounce_y box ball =
-    let open BALL in
-    let open BOX in
     bound_speed
-      (if ball.y -. ball.r < box.infy then
-         (* Collision avec le bord bas *)
-         { ball with y = box.infy +. ball.r; vy = -.ball.vy *. P.ball_bounce_factor; pv = ball.pv - 1 }
-       else if ball.y +. ball.r > box.supy then
-         (* Collision avec le bord haut *)
-         { ball with y = box.supy -. ball.r; vy = -.ball.vy *. P.ball_bounce_factor }
+      (if ball.x -. ball.r < P.box_infx then
+         (* Collision avec le bord gauche *)
+         { ball with x = P.box_infx +. ball.r; vx = -.ball.vx *. P.ball_bounce_factor }
+       else if ball.x +. ball.r > P.box_supx then
+         (* Collision avec le bord droit *)
+         { ball with x = P.box_supx -. ball.r; vx = -.ball.vx *. P.ball_bounce_factor }
        else
          ball)
   ;;
 
-  let with_box ball box = bounce_x box (bounce_y box ball)
+  let bounce_y ball =
+    let open BALL in
+    bound_speed
+      (if ball.y -. ball.r < P.box_infy then
+         (* Collision avec le bord bas *)
+         { ball with
+           y = P.box_infy +. ball.r
+         ; vy = -.ball.vy *. P.ball_bounce_factor
+         ; pv = ball.pv - 1
+         }
+       else if ball.y +. ball.r > P.box_supy then
+         (* Collision avec le bord haut *)
+         { ball with y = P.box_supy -. ball.r; vy = -.ball.vy *. P.ball_bounce_factor }
+       else
+         ball)
+  ;;
+
+  let with_box ball = bounce_x (bounce_y ball)
 
   let with_paddle ball paddle =
     (* check si balle dans la zone de la raquette *)
@@ -124,7 +125,9 @@ module Make (P : PARAMS) = struct
            { ball with
              y = paddle_top
            ; vx = ball.vx +. impulse
-           ; vy = abs_float ball.vy *. P.ball_bounce_factor (* la balle rebondit vers le haut *)
+           ; vy =
+               abs_float ball.vy
+               *. P.ball_bounce_factor (* la balle rebondit vers le haut *)
            }
          else
            ball))
