@@ -12,7 +12,7 @@ module Make (P : PARAMS) = struct
     | Playing
     | GameOver
     | Victory
-    | Pause
+    | Paused
 
   type t =
     { ball : BALL.t
@@ -27,14 +27,17 @@ module Make (P : PARAMS) = struct
   ;;
 
   let update (x_mouse, click) { ball; level; score; paddle; status } =
+    if click then
+      (* dodo pour éviter de comptabiliser plusieurs clicks en une frame *)
+      Unix.sleepf 0.1;
     match status with
-    | Pause ->
+    | Paused ->
       let status' =
         if click then (
           Printf.printf "Fin Pause\n";
           Playing
         ) else
-          Pause
+          Paused
       in
       { ball; level; score; paddle; status = status' }
     | Init ->
@@ -70,7 +73,7 @@ module Make (P : PARAMS) = struct
         else if click then (
           (* jeu mis en pause *)
           Printf.printf "Pause\n";
-          Pause
+          Paused
         ) else
           (* vie perdue on replace la balle sur la raquette *)
           Playing
@@ -173,7 +176,7 @@ module Make (P : PARAMS) = struct
       draw_game_over score
     else if status = Victory then
       draw_victory score
-    else if status = Pause then
+    else if status = Paused then
       draw_pause ();
     (* Debug *)
     Graphics.(

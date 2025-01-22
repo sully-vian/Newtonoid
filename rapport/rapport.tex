@@ -13,4 +13,61 @@
 
 \section{Introduction}
 
+\section{Niveaux de jeu}
+
+Initialement, un niveaux de jeu était défini en OCaml et chaque brique ajoutée séparément. C'était à la fois verbeux et peu pratique. Nous avons donc "développer" une syntaxe très simple pour définir un niveau textuellement. Chaque type de brique est représenté par un caractère différent et l'air est représenté par un espace. Les bordures sont fixées avec les caractères tiret et barre verticale. Un exemple de niveau est donné à la figure \ref{fig:level.txt}.
+
+\begin{figure}[h]
+    \begin{verbatim}
+    |----------------|
+    | ############## |
+    | ============== |
+    | ++++++++++++++ |
+    |                |
+    |                |
+    |                |
+    |----------------|
+\end{verbatim}
+    \begin{verbatim}
+    |----------------|
+    | @+ + + + + + @ |
+    | @ + + + + + +@ |
+    | @+ + + + + + @ |
+    | @ + + + + + +@ |
+    | @+ + + + + + @ |
+    | @ + + + + + +@ |
+    | @@@@@@@@@@@@@@ |
+    |                |
+    |----------------|
+    \end{verbatim}
+    \caption{Exemple de niveau}
+    \label{fig:level.txt}
+\end{figure}
+
+\section{Paramètres}
+
+Nous avons vite compris que la possibilité de changer efficacement les paamètres était cruciale pour le développement et pratique pour le joueur. C'est pourquoi nous avons créé un module \texttt{Params} qui contient tous les paramètres du jeu. L'idée était de paramétrer les autres modules en fonction de \texttt{Params}. Ainsi, chaque module est en partie défini par les paramètres qui lui sont donnés.
+
+Pour faciliter la gestion des paramètres, nous avons développé un "parsing" primitif de fichier ".conf" qui récupère les paramètres du jeu et crée un module \texttt{Params} correspondant. Cette fonctionnalité est implémentée via le foncteur (au sens d'OCaml) \text{Params.Make} qui prend en argument un simple module contenant le nom du fichier de configuration et renvoie un module \texttt{Params}.
+
+\section{Contrôles}
+
+\subsection{Démarrer le jeu}
+
+Initialement, le jeu est en pause, la balle collée sur la raquette. Lors du clic du joueur, la balle est propulsée vers le haut et les mises-à-jour commencent à s'effectuer. Le clic change l'état de jeu de \texttt{Init} à \texttt{Playing}.
+
+\subsection{Mettre le jeu en pause}
+
+Le joueur a la possibilité de mettre le jeu en pause en cliquant sur le bouton de sa souris. La fonction \texttt{State.update} change le \texttt{game\_status} de \texttt{Playing} à \texttt{Paused} (et inversement) lorqu'un clic est détecté. Étant donné que la boucle de mise-à-jour continue de tourner mais sans modifier l'état de jeu, il est impératif de rajouter un \texttt{sleep} lors d'un clic, pour éviter de le comptabiliser sur plusieurs frames.
+
+\section{Fin du jeu}
+
+La fin du jeu intervient dans deux cas: le joueur n'a plus de point de vie ( état\texttt{GameOver}), ou le niveau ne contient plus que des briques incassables (état \texttt{Victory}). Dans les deux cas, la mise-à-jour s'arrête et un message de fin s'affiche à l'écran.
+
+\section{Améliorations}
+
+\begin{itemize}
+    \item \textbf{Taille du texte:} Les messages de fin de jeu affichés à l'écran sont écrit en petit. Le module \texttt{Graphics} d'OCaml ne possède pas d'implémentation de la fonction \texttt{set\_text\_size} pourtant spécifiée dans l'interface. Il est donc difficile de changer la taille d'écriture.
+\end{itemize}
+
 \end{document}
