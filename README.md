@@ -5,7 +5,8 @@
 - quadtree (partition quadrillée qui force le découpage du quadtree)
 - passage au niveau suivant
 - sons
-- nouveaux niveaux (c moi)
+- briques avec pouvoirs (+1 vie, balle ralentie, raquette élargie)
+- pause quand click
 
 ## Pour compiler
 

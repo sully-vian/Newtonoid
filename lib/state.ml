@@ -12,6 +12,7 @@ module Make (P : PARAMS) = struct
     | Playing
     | GameOver
     | Victory
+    | Pause
 
   type t =
     { ball : BALL.t
@@ -27,6 +28,15 @@ module Make (P : PARAMS) = struct
 
   let update (x_mouse, click) { ball; level; score; paddle; status } =
     match status with
+    | Pause ->
+      let status' =
+        if click then (
+          Printf.printf "Fin Pause\n";
+          Playing
+        ) else
+          Pause
+      in
+      { ball; level; score; paddle; status = status' }
     | Init ->
       let paddle' = PADDLE.update x_mouse paddle in
       let ball' =
@@ -54,11 +64,16 @@ module Make (P : PARAMS) = struct
           after_level)
       in
       let status' =
-        if BALL.(ball.pv == ball'.pv) then
-          Playing
-        else
-          (* si une vie est perdue, on replace la balle sur la raquette *)
+        if BALL.(ball.pv > ball'.pv) then
+          (* vie perdue *)
           Init
+        else if click then (
+          (* jeu mis en pause *)
+          Printf.printf "Pause\n";
+          Pause
+        ) else
+          (* vie perdue on replace la balle sur la raquette *)
+          Playing
       in
       { ball = ball'; level = level'; score = score'; paddle = paddle'; status = status' }
     | _ ->
@@ -106,6 +121,13 @@ module Make (P : PARAMS) = struct
       draw_string (Format.sprintf "PVs : %d" BALL.(ball.pv)))
   ;;
 
+  let draw_pause () =
+    Graphics.(
+      set_color P.text_color;
+      moveto 300 15;
+      draw_string "Pause")
+  ;;
+
   (* TODO: changer la taille du texte *)
   let draw_game_over score =
     Graphics.(
@@ -150,7 +172,9 @@ module Make (P : PARAMS) = struct
     if status = GameOver then
       draw_game_over score
     else if status = Victory then
-      draw_victory score;
+      draw_victory score
+    else if status = Pause then
+      draw_pause ();
     (* Debug *)
     Graphics.(
       set_color P.text_color;

@@ -8,6 +8,7 @@ module Make (P : PARAMS) : sig
     | Playing
     | GameOver
     | Victory
+    | Pause
 
   (** [State.t] représente un état du jeu à partir de la balle, du niveau et du
   score *)

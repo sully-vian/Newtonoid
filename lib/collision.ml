@@ -118,18 +118,17 @@ module Make (P : PARAMS) = struct
     let impulse = PADDLE.(paddle.vx) /. 10. in
     (* balle rebondit vers le haut *)
     let paddle_top = PADDLE.(paddle.y +. paddle.h) in
-    BALL.(
-      bound_speed
-        (if in_range_x && in_range_y && BALL.(ball.y -. ball.r) < paddle_top && descending
-         then
-           { ball with
-             y = paddle_top
-           ; vx = ball.vx +. impulse
-           ; vy =
-               abs_float ball.vy
-               *. P.ball_bounce_factor (* la balle rebondit vers le haut *)
-           }
-         else
-           ball))
+    if in_range_x && in_range_y && BALL.(ball.y -. ball.r) < paddle_top && descending then
+      BALL.(
+        bound_speed
+          { ball with
+            y = paddle_top
+          ; vx = ball.vx +. impulse
+          ; vy =
+              abs_float ball.vy
+              *. P.ball_bounce_factor (* la balle rebondit vers le haut *)
+          })
+    else
+      ball
   ;;
 end
