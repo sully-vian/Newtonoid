@@ -13,15 +13,34 @@
 
 \section{Introduction}
 
+\section{Architecture}
+
+Les sources sont réparties en deux répertoires: \texttt{bin} et \texttt{lib}.
+
+\begin{itemize}
+    \item \texttt{bin} contient le programme principal \texttt{newtonoid.ml} qui peut utiliser les modules de la bibliothèque \texttt{Libnewtonoid}.
+    \item \texttt{lib} contient les modules et interfaces impémentant les divers éléments du jeu. Le fichier \texttt{lib/dune} contient une directive pour créer une bibliothèque appelée \texttt{Libnewtonoid} contenant tous les modules de \texttt{lib}.
+\end{itemize}
+
+Les répertoires \texttt{configs} et \texttt{levels} contiennent respectivement des configuration et des niveaux d'exemple.
+
+\subsection{Modules}
+
+La plupart des modules de \texttt{Libnewtonoid} sont dotés d'une interface documentée en \texttt{.mli}. Certains modules sont relatifs à des objets: \texttt{Ball}, \texttt{Box}, \texttt{Brick}, \texttt{Level}, \texttt{Paddle}, \texttt{State}. Tandis que d'autres sont un groupement de fonctions nécessaires à une fonctionnalité: \texttt{Collision}, \texttt{Input}, \texttt{Iterator}, \texttt{LoadLevel}, \texttt{Utils}, \texttt{ParamValidator}, \texttt{Iterator}.
+
+La plupart des modules contiennent un sous-module foncteur (au sens d'OCaml) paramétré par un module \texttt{P}. On a donc une structure récurrente de la forme: \texttt{module Make(P: Params)} qui permet d'instancier le foncteur avec les paramètres fournis par l'utilisateur.
+
 \section{Objets}
 
-Chaque objet du jeu est modélisé par un type enregistrement afin de permettre un accès efficace aux différents champs (par opposition aux tuples qui nécessitent du filtrage par motif). Chaque type objet est appelé \texttt{t} et est défini dans son propre module qui regroupe les opérations associées. Parmis ces opérations, on note surtout \texttt{make}, \texttt{draw} et \texttt{draw\_shadow} et qui permettent de respectivement créer un objet et de l'afficher à l'écran et de dessiner son ombre.
+Chaque objet du jeu est modélisé par un type enregistrement afin de permettre un accès efficace aux différents champs (par opposition aux tuples qui nécessitent du filtrage par motif). Chaque type objet est appelé \texttt{t} et est défini dans son propre module qui regroupe les fonctions associées. Parmis celles-ci, on note surtout \texttt{make}, \texttt{draw} et \texttt{draw\_shadow} et qui permettent respectivement de créer un objet, de l'afficher à l'écran et de dessiner son ombre.
 
 \section{Niveaux de jeu}
 
 Initialement, un niveau de jeu était défini en OCaml et chaque brique ajoutée séparément. C'était à la fois verbeux et peu pratique. Nous avons donc "développé" une syntaxe très simple pour définir un niveau textuellement. Chaque type de brique est représenté par un caractère différent et l'air est représenté par un espace. Les bordures sont fixées avec les caractères tiret et barre verticale. Deux exemples de niveaux sont donnés à la figure \ref{fig:level.txt}.
 
-\begin{figure}[h]
+Des exemples de niveaux sont disponibles dans le répertoires \texttt{levels}.
+
+\begin{figure}[ht]
     \begin{minipage}{0.4\textwidth}
         \begin{verbatim}
         |----------------|
@@ -51,13 +70,23 @@ Initialement, un niveau de jeu était défini en OCaml et chaque brique ajoutée
     \label{fig:level.txt}
 \end{figure}
 
+Cette solution a donné une liberté de création qui pose un autre problème. Désormais, les niveaux peuvent avoir différents formats. Afin d'éviter les niveaux débordant de la fenêtre, les dimensiosn de cette dernière sont fonction directe des dimensions du niveau et de la taille des briques.
+
 \section{Paramètres}
 
-Nous avons vite compris que la possibilité de changer efficacement les paamètres était cruciale pour le développement et pratique pour le joueur. C'est pourquoi nous avons créé un module \texttt{Params} qui contient tous les paramètres du jeu. L'idée était de paramétrer les autres modules en fonction de \texttt{Params}. Ainsi, chaque module est en partie défini par les paramètres qui lui sont donnés.
+Nous avons vite compris que la possibilité de changer efficacement les paramètres était cruciale pour le développement et pratique pour le joueur. C'est pourquoi nous avons créé un module \texttt{Params} qui contient tous les paramètres du jeu. L'idée était de paramétrer les autres modules en fonction de \texttt{Params}. Ainsi, chaque module est en partie défini par les paramètres qui lui sont donnés.
 
 Cette paramétrisation des modules permet de diminuer le nombre d'arguments des fonctions ainsi que la présene de valeurs "magiques" dans le code.
 
 Pour faciliter la gestion des paramètres, nous avons développé un "parsing" primitif de fichier ".conf" qui récupère les paramètres du jeu et crée un module \texttt{Params} correspondant. Cette fonctionnalité est implémentée via le foncteur (au sens d'OCaml) \texttt{Params.Make} qui prend en argument un simple module contenant le nom du fichier de configuration et renvoie un module \texttt{Params}.
+
+Des exemples de fichiers de configuration sont disponibles dans le répertoire \texttt{configs}.
+
+\section{Tests}
+
+Les tests unitaires de ce projet sont réalisés avec la bibliothèque \texttt{ppx\_inline\_test}.
+
+Afin d'éviter des paramétrages insensés, à chaque lancement de jeu, \texttt{paramValidator.ml} valide (ou non) les valeurs données par l'utilisateur dans le fichier de configuration. On vérifie par exemple que \texttt{ball\_r > 0}, \texttt{ball\_init\_vy <= ball\_max\_vy} etc.
 
 \section{Contrôles}
 

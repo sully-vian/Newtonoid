@@ -16,17 +16,17 @@ let load_levels level_files =
 let main_flux () =
   if Array.length Sys.argv < 3 then usage ();
   (* instanciation des modules *)
-  let module PFile =
+  let module P =
     Params.Make (struct
       let config_filename = Sys.argv.(1)
       let level_filename = Sys.argv.(2) (* L'emplacement du fichier va évoluer *)
     end)
   in
-  let module T = Tests.Make (PFile) in
-  T.run_tests ();
-  let module STATE = State.Make (PFile) in
-  let module BOX = Box.Make (PFile) in
-  let module LEVEL = Level.Make (PFile) in
+  let module PV = ParamValidator.Make (P) in
+  PV.run_tests ();
+  let module STATE = State.Make (P) in
+  let module BOX = Box.Make (P) in
+  let module LEVEL = Level.Make (P) in
   let box = BOX.make in
   (* format de la fenêtre graphique *)
   let graphic_format =
@@ -48,14 +48,14 @@ let main_flux () =
         | None -> current_score
         | Some (state, state_flux') ->
           Graphics.clear_graph ();
-          (* draw background *)
-          Graphics.set_color PFile.bg_color;
+          (* dessiner le background *)
+          Graphics.set_color P.bg_color;
           Graphics.fill_rect 0 0 (Graphics.size_x ()) (Graphics.size_y ());
           STATE.draw state;
           BOX.draw box;
           Graphics.synchronize ();
-          Unix.sleepf PFile.dt;
-          if LEVEL.is_finished state.level then
+          Unix.sleepf P.dt;
+          if LEVEL.is_finished STATE.(state.level) then
             loop rest (current_score + STATE.(state.score))
           else
             play_level state_flux'

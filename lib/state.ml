@@ -23,7 +23,12 @@ module Make (P : PARAMS) = struct
     }
 
   let make level previous_score =
-    { ball = BALL.make; level; score = previous_score; paddle = PADDLE.make; status = Init }
+    { ball = BALL.make
+    ; level
+    ; score = previous_score
+    ; paddle = PADDLE.make
+    ; status = Init
+    }
   ;;
 
   let update (x_mouse, click) { ball; level; score; paddle; status } =
@@ -33,10 +38,9 @@ module Make (P : PARAMS) = struct
     match status with
     | Paused ->
       let status' =
-        if click then (
-          Printf.printf "Fin Pause\n";
+        if click then
           Playing
-        ) else
+        else
           Paused
       in
       { ball; level; score; paddle; status = status' }
@@ -54,7 +58,7 @@ module Make (P : PARAMS) = struct
         else
           Init
       in
-      { ball = ball'; level; score = score; paddle = paddle'; status = status' }
+      { ball = ball'; level; score; paddle = paddle'; status = status' }
     | Playing ->
       (* m-à-j de la raquette puis collisions et test de survie *)
       let paddle' = PADDLE.update x_mouse paddle in
@@ -70,11 +74,10 @@ module Make (P : PARAMS) = struct
         if BALL.(ball.pv > ball'.pv) then
           (* vie perdue *)
           Init
-        else if click then (
+        else if click then
           (* jeu mis en pause *)
-          Printf.printf "Pause\n";
           Paused
-        ) else if LEVEL.is_finished level' then
+        else if LEVEL.is_finished level' then
           Victory
         else
           (* vie perdue on replace la balle sur la raquette *)
