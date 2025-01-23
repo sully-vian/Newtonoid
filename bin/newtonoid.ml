@@ -55,7 +55,7 @@ let main_flux () =
           BOX.draw box;
           Graphics.synchronize ();
           Unix.sleepf PFile.dt;
-          if STATE.is_finished state then
+          if LEVEL.is_finished state.level then
             loop rest (current_score + STATE.(state.score))
           else
             play_level state_flux'
