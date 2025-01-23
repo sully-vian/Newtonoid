@@ -18,6 +18,8 @@ module Make (P : PARAMS) : sig
     ; score : int
     ; paddle : Paddle.Make(P).t
     ; status : game_status
+    ; levels : LEVEL.t list
+    ; current_level_index : int
     }
 
   (** [make level] crée un état initial du jeu avec les paramètres de [P], le niveau [level] et le score actuel *)
