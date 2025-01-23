@@ -62,7 +62,6 @@ let main_flux () =
       in
       (* Réinitialiser l'état de la raquette et du curseur *)
       Graphics.clear_graph ();
-      Graphics.moveto 0 0; (* Réinitialiser la position de la souris *)
       play_level (STATE.make_flux Input.mouse initial_state)
   in
   Graphics.(

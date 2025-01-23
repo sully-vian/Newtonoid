@@ -22,11 +22,6 @@ module Make (P : PARAMS) = struct
     ; status : game_status
     }
 
- (* let make level =
-    { ball = BALL.make; level; score = 0; paddle = PADDLE.make; status = Init }
-  ;;
-*)
-
   let make level previous_score =
     { ball = BALL.make; level; score = previous_score; paddle = PADDLE.make; status = Init }
   ;;
@@ -59,7 +54,7 @@ module Make (P : PARAMS) = struct
         else
           Init
       in
-      { ball = ball'; level; score; paddle = paddle'; status = status' }
+      { ball = ball'; level; score = score; paddle = paddle'; status = status' }
     | Playing ->
       (* m-à-j de la raquette puis collisions et test de survie *)
       let paddle' = PADDLE.update x_mouse paddle in
