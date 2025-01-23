@@ -20,8 +20,8 @@ module Make (P : PARAMS) : sig
     ; status : game_status
     }
 
-  (** [make level] crée un état initial du jeu avec les paramètres de [P] et le niveau [level] *)
-  val make : Level.Make(P).t -> t
+  (** [make level] crée un état initial du jeu avec les paramètres de [P], le niveau [level] et le score actuel *)
+  val make : Level.Make(P).t -> int -> t
 
   (** [update mouse state] met à jour l'état du jeu [state] (collisions, score etc) pour l'état de la souris [mouse]. *)
   val update : float * bool -> t -> t

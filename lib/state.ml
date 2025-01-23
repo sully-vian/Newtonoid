@@ -22,9 +22,10 @@ module Make (P : PARAMS) = struct
     ; status : game_status
     }
 
-  let make level =
+ (* let make level =
     { ball = BALL.make; level; score = 0; paddle = PADDLE.make; status = Init }
   ;;
+*)
 
   let make level previous_score =
     { ball = BALL.make; level; score = previous_score; paddle = PADDLE.make; status = Init }
