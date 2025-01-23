@@ -42,7 +42,7 @@ let main_flux () =
     | [] -> current_score
     | level_file :: rest ->
       let level = LEVEL.load_level level_file in
-      let initial_state = STATE.make level in
+      let initial_state = STATE.make level current_score in
       let rec play_level state_flux =
         match Flux.uncons state_flux with
         | None -> current_score
@@ -60,6 +60,8 @@ let main_flux () =
           else
             play_level state_flux'
       in
+      (* Réinitialiser l'état de la raquette et du curseur *)
+      Graphics.clear_graph ();
       play_level (STATE.make_flux Input.mouse initial_state)
   in
   Graphics.(

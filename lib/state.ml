@@ -26,6 +26,10 @@ module Make (P : PARAMS) = struct
     { ball = BALL.make; level; score = 0; paddle = PADDLE.make; status = Init }
   ;;
 
+  let make level previous_score =
+    { ball = BALL.make; level; score = previous_score; paddle = PADDLE.make; status = Init }
+  ;;
+
   let update (x_mouse, click) { ball; level; score; paddle; status } =
     if click then
       (* dodo pour éviter de comptabiliser plusieurs clicks en une frame *)
