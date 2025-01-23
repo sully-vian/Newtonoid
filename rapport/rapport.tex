@@ -13,34 +13,41 @@
 
 \section{Introduction}
 
+\section{Objets}
+
+Chaque objet du jeu est modélisé par un type enregistrement afin de permettre un accès efficace aux différents champs (par opposition aux tuples qui nécessitent du filtrage par motif). Chaque type objet est appelé \texttt{t} et est défini dans son propre module qui regroupe les opérations associées. Parmis ces opérations, on note surtout \texttt{make}, \texttt{draw} et \texttt{draw\_shadow} et qui permettent de respectivement créer un objet et de l'afficher à l'écran et de dessiner son ombre.
+
 \section{Niveaux de jeu}
 
-Initialement, un niveaux de jeu était défini en OCaml et chaque brique ajoutée séparément. C'était à la fois verbeux et peu pratique. Nous avons donc "développer" une syntaxe très simple pour définir un niveau textuellement. Chaque type de brique est représenté par un caractère différent et l'air est représenté par un espace. Les bordures sont fixées avec les caractères tiret et barre verticale. Un exemple de niveau est donné à la figure \ref{fig:level.txt}.
+Initialement, un niveau de jeu était défini en OCaml et chaque brique ajoutée séparément. C'était à la fois verbeux et peu pratique. Nous avons donc "développé" une syntaxe très simple pour définir un niveau textuellement. Chaque type de brique est représenté par un caractère différent et l'air est représenté par un espace. Les bordures sont fixées avec les caractères tiret et barre verticale. Deux exemples de niveaux sont donnés à la figure \ref{fig:level.txt}.
 
 \begin{figure}[h]
-    \begin{verbatim}
-    |----------------|
-    | ############## |
-    | ============== |
-    | ++++++++++++++ |
-    |                |
-    |                |
-    |                |
-    |----------------|
-\end{verbatim}
-    \begin{verbatim}
-    |----------------|
-    | @+ + + + + + @ |
-    | @ + + + + + +@ |
-    | @+ + + + + + @ |
-    | @ + + + + + +@ |
-    | @+ + + + + + @ |
-    | @ + + + + + +@ |
-    | @@@@@@@@@@@@@@ |
-    |                |
-    |----------------|
-    \end{verbatim}
-    \caption{Exemple de niveau}
+    \begin{minipage}{0.4\textwidth}
+        \begin{verbatim}
+        |----------------|
+        | ############## |
+        | ============== |
+        | ++++++++++++++ |
+        |                |
+        |                |
+        |                |
+        |----------------|
+        \end{verbatim}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.4\textwidth}
+        \begin{verbatim}
+        |----------------|
+        | @+ + + + + + @ |
+        | @ + + + + + +@ |
+        | @+ + + + + + @ |
+        | @ + + + + + +@ |
+        | @@@@@@@@@@@@@@ |
+        |                |
+        |----------------|
+        \end{verbatim}
+    \end{minipage}
+    \caption{Exemples de niveau}
     \label{fig:level.txt}
 \end{figure}
 
@@ -48,7 +55,9 @@ Initialement, un niveaux de jeu était défini en OCaml et chaque brique ajouté
 
 Nous avons vite compris que la possibilité de changer efficacement les paamètres était cruciale pour le développement et pratique pour le joueur. C'est pourquoi nous avons créé un module \texttt{Params} qui contient tous les paramètres du jeu. L'idée était de paramétrer les autres modules en fonction de \texttt{Params}. Ainsi, chaque module est en partie défini par les paramètres qui lui sont donnés.
 
-Pour faciliter la gestion des paramètres, nous avons développé un "parsing" primitif de fichier ".conf" qui récupère les paramètres du jeu et crée un module \texttt{Params} correspondant. Cette fonctionnalité est implémentée via le foncteur (au sens d'OCaml) \text{Params.Make} qui prend en argument un simple module contenant le nom du fichier de configuration et renvoie un module \texttt{Params}.
+Cette paramétrisation des modules permet de diminuer le nombre d'arguments des fonctions ainsi que la présene de valeurs "magiques" dans le code.
+
+Pour faciliter la gestion des paramètres, nous avons développé un "parsing" primitif de fichier ".conf" qui récupère les paramètres du jeu et crée un module \texttt{Params} correspondant. Cette fonctionnalité est implémentée via le foncteur (au sens d'OCaml) \texttt{Params.Make} qui prend en argument un simple module contenant le nom du fichier de configuration et renvoie un module \texttt{Params}.
 
 \section{Contrôles}
 
