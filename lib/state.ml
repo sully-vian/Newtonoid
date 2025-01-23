@@ -74,7 +74,9 @@ module Make (P : PARAMS) = struct
           (* jeu mis en pause *)
           Printf.printf "Pause\n";
           Paused
-        ) else
+        ) else if LEVEL.is_finished level' then
+          Victory
+        else
           (* vie perdue on replace la balle sur la raquette *)
           Playing
       in

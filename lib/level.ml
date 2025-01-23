@@ -12,10 +12,10 @@ module Make (P : PARAMS) = struct
     match level with
     | [] -> true
     | h :: t ->
-      if BRICK.(h.kind = Unbreakable) then
-        is_finished t
-      else
+      if BRICK.(h.kind <> Unbreakable && is_alive h) then
         false
+      else
+        is_finished t
   ;;
 
   let draw l = List.iter BRICK.draw l
