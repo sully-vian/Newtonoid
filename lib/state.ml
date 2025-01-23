@@ -20,8 +20,6 @@ module Make (P : PARAMS) = struct
     ; score : int
     ; paddle : PADDLE.t
     ; status : game_status
-    ; levels : LEVEL.t list
-    ; current_level_index : int
     }
 
   let make level previous_score =
@@ -30,16 +28,14 @@ module Make (P : PARAMS) = struct
     ; score = previous_score
     ; paddle = PADDLE.make
     ; status = Init
-    ; levels = []
-    ; current_level_index = 0
     }
   ;;
 
-  let update (x_mouse, click) state =
+  let update (x_mouse, click) { ball; level; score; paddle; status } =
     if click then
       (* dodo pour éviter de comptabiliser plusieurs clicks en une frame *)
       Unix.sleepf 0.1;
-    match state.status with
+    match status with
     | Paused ->
       let status' =
         if click then
@@ -47,13 +43,13 @@ module Make (P : PARAMS) = struct
         else
           Paused
       in
-      { state with status = status' }
+      { ball; level; score; paddle; status = status' }
     | Init ->
-      let paddle' = PADDLE.update x_mouse state.paddle in
+      let paddle' = PADDLE.update x_mouse paddle in
       let ball' =
         let x' = PADDLE.(paddle'.x +. (paddle'.w /. 2.)) in
-        let y' = PADDLE.(paddle'.y +. paddle'.h) +. BALL.(state.ball.r) in
-        BALL.{ state.ball with x = x'; y = y'; vx = 0.; vy = P.ball_init_vy }
+        let y' = PADDLE.(paddle'.y +. paddle'.h) +. BALL.(ball.r) in
+        BALL.{ ball with x = x'; y = y'; vx = 0.; vy = P.ball_init_vy }
       in
       let status' =
         (* début du jeu si click *)
@@ -62,45 +58,35 @@ module Make (P : PARAMS) = struct
         else
           Init
       in
-      { state with ball = ball'; paddle = paddle'; status = status' }
+      { ball = ball'; level; score; paddle = paddle'; status = status' }
     | Playing ->
       (* m-à-j de la raquette puis collisions et test de survie *)
-      let paddle' = PADDLE.update x_mouse state.paddle in
+      let paddle' = PADDLE.update x_mouse paddle in
       let ball', level', score' =
-        let after_update = BALL.move state.ball in
+        let after_update = BALL.move ball in
         COLLISION.(
-          let after_paddle = with_paddle after_update state.paddle in
+          let after_paddle = with_paddle after_update paddle in
           let after_box = with_box after_paddle in
-          let after_level = with_level after_box state.level state.score in
+          let after_level = with_level after_box level score in
           after_level)
       in
       let status' =
-        if BALL.(state.ball.pv > ball'.pv) then
+        if BALL.(ball.pv > ball'.pv) then
           (* vie perdue *)
           Init
         else if click then
           (* jeu mis en pause *)
           Paused
         else if LEVEL.is_finished level' then
-          if state.current_level_index + 1 < List.length state.levels then
-            (* Passer au niveau suivant *)
-            let next_level = List.nth state.levels (state.current_level_index + 1) in
-            { state with
-              state.level = next_level
-            ; state.current_level_index = state.current_level_index + 1
-            ; state.status = Init
-            }
-          else
-            (* Tous les niveaux sont terminés *)
-            Victory
+          Victory
         else
           (* vie perdue on replace la balle sur la raquette *)
           Playing
       in
-      { state with ball = ball'; level = level'; score = score'; paddle = paddle'; status = status' }
+      { ball = ball'; level = level'; score = score'; paddle = paddle'; status = status' }
     | _ ->
       (* on ne met pas à jour l'état lorsque le jeu est fini *)
-      state
+      { ball; level; score; paddle; status }
   ;;
 
   let is_alive { ball; _ } = BALL.(ball.pv) > 0

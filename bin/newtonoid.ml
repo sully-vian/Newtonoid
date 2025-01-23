@@ -37,28 +37,39 @@ let main_flux () =
       (int_of_float ((2. *. box.marge) +. box.supy -. box.infy))
   in
   let level_files = load_levels Sys.argv in
-  let levels = List.map LEVEL.load_level level_files in
-  let initial_state = STATE.make (List.hd levels) 0 in
-  let initial_state = { initial_state with levels; current_level_index = 0 } in
-  let rec loop state_flux =
-    match Flux.uncons state_flux with
-    | None -> ()
-    | Some (state, state_flux') ->
+  let rec loop levels current_score =
+    match levels with
+    | [] -> current_score
+    | level_file :: rest ->
+      let level = LEVEL.load_level level_file in
+      let initial_state = STATE.make level current_score in
+      let rec play_level state_flux =
+        match Flux.uncons state_flux with
+        | None -> current_score
+        | Some (state, state_flux') ->
+          Graphics.clear_graph ();
+          (* dessiner le background *)
+          Graphics.set_color P.bg_color;
+          Graphics.fill_rect 0 0 (Graphics.size_x ()) (Graphics.size_y ());
+          STATE.draw state;
+          BOX.draw box;
+          Graphics.synchronize ();
+          Unix.sleepf P.dt;
+          if LEVEL.is_finished STATE.(state.level) then
+            loop rest (current_score + STATE.(state.score))
+          else
+            play_level state_flux'
+      in
+      (* Réinitialiser l'état de la raquette et du curseur *)
       Graphics.clear_graph ();
-      (* dessiner le background *)
-      Graphics.set_color P.bg_color;
-      Graphics.fill_rect 0 0 (Graphics.size_x ()) (Graphics.size_y ());
-      STATE.draw state;
-      BOX.draw box;
-      Graphics.synchronize ();
-      Unix.sleepf P.dt;
-      loop state_flux'
+      play_level (STATE.make_flux Input.mouse initial_state)
   in
   Graphics.(
     set_window_title "Newtonoid";
     open_graph graphic_format;
     auto_synchronize false);
-  loop (STATE.make_flux Input.mouse initial_state);
+  let final_score = loop level_files 0 in
+  Format.printf "Final Score : %d@\n" final_score;
   Graphics.close_graph ()
 ;;
 
