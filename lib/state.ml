@@ -69,7 +69,7 @@ module Make (P : PARAMS) = struct
       let ball', level', score' =
         let after_update = BALL.move state.ball in
         COLLISION.(
-          let after_paddle = with_paddle after_update paddle in
+          let after_paddle = with_paddle after_update state.paddle in
           let after_box = with_box after_paddle in
           let after_level = with_level after_box state.level state.score in
           after_level)
@@ -86,9 +86,9 @@ module Make (P : PARAMS) = struct
             (* Passer au niveau suivant *)
             let next_level = List.nth state.levels (state.current_level_index + 1) in
             { state with
-              level = next_level
-            ; current_level_index = state.current_level_index + 1
-            ; status = Init
+              state.level = next_level
+            ; state.current_level_index = state.current_level_index + 1
+            ; state.status = Init
             }
           else
             (* Tous les niveaux sont terminés *)

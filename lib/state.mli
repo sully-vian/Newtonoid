@@ -18,7 +18,7 @@ module Make (P : PARAMS) : sig
     ; score : int
     ; paddle : Paddle.Make(P).t
     ; status : game_status
-    ; levels : LEVEL.t list
+    ; levels : Level.Make(P).t list
     ; current_level_index : int
     }
 
