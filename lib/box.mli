@@ -16,7 +16,7 @@ module Make (P : PARAMS) : sig
     }
 
   (** [make] crée une fenêtre de jeu avec les paramètres de [P]. *)
-  val make : t
+  val make : float -> float -> float -> float -> t
 
   (** [draw box] dessine les contours de l'aire de jeu [box] *)
   val draw : t -> unit

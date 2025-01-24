@@ -22,10 +22,10 @@ module Make (P : Params.PARAMS) = struct
       ; "ball_bounce_factor > 0", P.ball_bounce_factor > 0.
       ; (* Box params Tests *)
         "box_marge > 0", P.box_marge > 0.
-      ; "box_infx = box_marge", P.box_infx = P.box_marge
-      ; "box_infy = box_marge", P.box_infy = P.box_marge
-      ; "box_supx > box_infx", P.box_supx > P.box_infx
-      ; "box_supy > box_infy", P.box_supy > P.box_infy
+        (* ; "box_infx = box_marge", P.box_infx = P.box_marge *)
+        (* ; "box_infy = box_marge", P.box_infy = P.box_marge *)
+        (* ; "box_supx > box_infx", P.box_supx > P.box_infx *)
+        (* ; "box_supy > box_infy", P.box_supy > P.box_infy *)
       ; (* Brick params Tests *)
         "brick_weak_pv > 0", P.brick_weak_pv > 0
       ; "brick_standard_pv > brick_weak_pv", P.brick_standard_pv > P.brick_weak_pv

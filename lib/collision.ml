@@ -4,6 +4,7 @@ module Make (P : PARAMS) = struct
   module BRICK = Brick.Make (P)
   module BALL = Ball.Make (P)
   module PADDLE = Paddle.Make (P)
+  module BOX = Box.Make (P)
 
   let with_brick (ball : BALL.t) (brick : BRICK.t) =
     let closest_x = max BRICK.(brick.x) (min BALL.(ball.x) BRICK.(brick.x +. brick.w)) in
@@ -74,37 +75,39 @@ module Make (P : PARAMS) = struct
       update_score_and_level final_ball brick_after level_after score_after
   ;;
 
-  let bounce_x ball =
+  let bounce_x box ball =
     let open BALL in
+    let open BOX in
     bound_speed
-      (if ball.x -. ball.r < P.box_infx then
+      (if ball.x -. ball.r < box.infx then
          (* Collision avec le bord gauche *)
-         { ball with x = P.box_infx +. ball.r; vx = -.ball.vx *. P.ball_bounce_factor }
-       else if ball.x +. ball.r > P.box_supx then
+         { ball with x = box.infx +. ball.r; vx = -.ball.vx *. P.ball_bounce_factor }
+       else if ball.x +. ball.r > box.supx then
          (* Collision avec le bord droit *)
-         { ball with x = P.box_supx -. ball.r; vx = -.ball.vx *. P.ball_bounce_factor }
+         { ball with x = box.supx -. ball.r; vx = -.ball.vx *. P.ball_bounce_factor }
        else
          ball)
   ;;
 
-  let bounce_y ball =
+  let bounce_y box ball =
     let open BALL in
+    let open BOX in
     bound_speed
-      (if ball.y -. ball.r < P.box_infy then
+      (if ball.y -. ball.r < box.infy then
          (* Collision avec le bord bas *)
          { ball with
-           y = P.box_infy +. ball.r
+           y = box.infy +. ball.r
          ; vy = -.ball.vy *. P.ball_bounce_factor
          ; pv = ball.pv - 1
          }
-       else if ball.y +. ball.r > P.box_supy then
+       else if ball.y +. ball.r > box.supy then
          (* Collision avec le bord haut *)
-         { ball with y = P.box_supy -. ball.r; vy = -.ball.vy *. P.ball_bounce_factor }
+         { ball with y = box.supy -. ball.r; vy = -.ball.vy *. P.ball_bounce_factor }
        else
          ball)
   ;;
 
-  let with_box ball = bounce_x (bounce_y ball)
+  let with_box box ball = bounce_x box (bounce_y box ball)
 
   let with_paddle ball paddle =
     (* check si balle dans la zone de la raquette *)

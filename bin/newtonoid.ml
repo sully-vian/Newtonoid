@@ -13,13 +13,12 @@ let load_levels level_files =
   Array.to_list (Array.sub level_files 2 (Array.length level_files - 2))
 ;;
 
-let main_flux () =
+let main () =
   if Array.length Sys.argv < 3 then usage ();
   (* instanciation des modules *)
   let module P =
     Params.Make (struct
       let config_filename = Sys.argv.(1)
-      let level_filename = Sys.argv.(2) (* L'emplacement du fichier va évoluer *)
     end)
   in
   let module PV = ParamValidator.Make (P) in
@@ -27,7 +26,7 @@ let main_flux () =
   let module STATE = State.Make (P) in
   let module BOX = Box.Make (P) in
   let module LEVEL = Level.Make (P) in
-  let box = BOX.make in
+  let box = BOX.make 10. 10. 800. 600. in (* TODO: choisir les bonnes valeurs *)
   (* format de la fenêtre graphique *)
   let graphic_format =
     let open BOX in
@@ -41,8 +40,8 @@ let main_flux () =
     match levels with
     | [] -> current_score
     | level_file :: rest ->
-      let level = LEVEL.load_level level_file in
-      let initial_state = STATE.make level current_score in
+      let level = LEVEL.load_level box level_file in
+      let initial_state = STATE.make box level current_score in
       let rec play_level state_flux =
         match Flux.uncons state_flux with
         | None -> current_score
@@ -73,4 +72,4 @@ let main_flux () =
   Graphics.close_graph ()
 ;;
 
-let () = main_flux ()
+let () = main ()

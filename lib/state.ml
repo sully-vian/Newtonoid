@@ -6,6 +6,7 @@ module Make (P : PARAMS) = struct
   module PADDLE = Paddle.Make (P)
   module LEVEL = Level.Make (P)
   module COLLISION = Collision.Make (P)
+  module BOX = Box.Make (P)
 
   type game_status =
     | Init
@@ -20,18 +21,20 @@ module Make (P : PARAMS) = struct
     ; score : int
     ; paddle : PADDLE.t
     ; status : game_status
+    ; box : BOX.t
     }
 
-  let make level previous_score =
+  let make box level previous_score =
     { ball = BALL.make
     ; level
     ; score = previous_score
     ; paddle = PADDLE.make
     ; status = Init
+    ; box
     }
   ;;
 
-  let update (x_mouse, click) { ball; level; score; paddle; status } =
+  let update (x_mouse, click) { ball; level; score; paddle; status; box } =
     if click then
       (* dodo pour éviter de comptabiliser plusieurs clicks en une frame *)
       Unix.sleepf 0.1;
@@ -43,9 +46,9 @@ module Make (P : PARAMS) = struct
         else
           Paused
       in
-      { ball; level; score; paddle; status = status' }
+      { ball; level; score; paddle; status = status'; box }
     | Init ->
-      let paddle' = PADDLE.update x_mouse paddle in
+      let paddle' = PADDLE.update box x_mouse paddle in
       let ball' =
         let x' = PADDLE.(paddle'.x +. (paddle'.w /. 2.)) in
         let y' = PADDLE.(paddle'.y +. paddle'.h) +. BALL.(ball.r) in
@@ -58,15 +61,15 @@ module Make (P : PARAMS) = struct
         else
           Init
       in
-      { ball = ball'; level; score; paddle = paddle'; status = status' }
+      { ball = ball'; level; score; paddle = paddle'; status = status'; box }
     | Playing ->
       (* m-à-j de la raquette puis collisions et test de survie *)
-      let paddle' = PADDLE.update x_mouse paddle in
+      let paddle' = PADDLE.update box x_mouse paddle in
       let ball', level', score' =
         let after_update = BALL.move ball in
         COLLISION.(
           let after_paddle = with_paddle after_update paddle in
-          let after_box = with_box after_paddle in
+          let after_box = with_box box after_paddle in
           let after_level = with_level after_box level score in
           after_level)
       in
@@ -83,10 +86,16 @@ module Make (P : PARAMS) = struct
           (* vie perdue on replace la balle sur la raquette *)
           Playing
       in
-      { ball = ball'; level = level'; score = score'; paddle = paddle'; status = status' }
+      { ball = ball'
+      ; level = level'
+      ; score = score'
+      ; paddle = paddle'
+      ; status = status'
+      ; box
+      }
     | _ ->
       (* on ne met pas à jour l'état lorsque le jeu est fini *)
-      { ball; level; score; paddle; status }
+      { ball; level; score; paddle; status; box }
   ;;
 
   let is_alive { ball; _ } = BALL.(ball.pv) > 0
@@ -136,15 +145,20 @@ module Make (P : PARAMS) = struct
       draw_string "Pause")
   ;;
 
+  let middle box =
+    let open BOX in
+    ( int_of_float ((box.supx -. box.infx) /. 2.)
+    , int_of_float ((box.supy -. box.infy) /. 2.) )
+  ;;
+
   (* TODO: changer la taille du texte *)
-  let draw_game_over score =
+  let draw_game_over state =
     Graphics.(
       let line1 = "Game Over !" in
-      let line2 = Format.sprintf "Final Score: %d" score in
+      let line2 = Format.sprintf "Final Score: %d" state.score in
       let line1_w, _ = text_size line1 in
       let line2_w, _ = text_size line2 in
-      let middle_x = int_of_float (P.box_supx -. P.box_infx) / 2 in
-      let middle_y = int_of_float (P.box_supy -. P.box_infy) / 2 in
+      let middle_x, middle_y = middle state.box in
       set_color red;
       moveto (middle_x - (line1_w / 2)) (middle_y + 10);
       draw_string line1;
@@ -153,14 +167,13 @@ module Make (P : PARAMS) = struct
   ;;
 
   (* TODO: changer la taille du texte *)
-  let draw_victory score =
+  let draw_victory state =
     Graphics.(
       let line1 = "Victory !" in
-      let line2 = Format.sprintf "Final Score: %d" score in
+      let line2 = Format.sprintf "Final Score: %d" state.score in
       let line1_w, _ = text_size line1 in
       let line2_w, _ = text_size line2 in
-      let middle_x = int_of_float (P.box_supx -. P.box_infx) / 2 in
-      let middle_y = int_of_float (P.box_supy -. P.box_infy) / 2 in
+      let middle_x, middle_y = middle state.box in
       set_color green;
       moveto (middle_x - (line1_w / 2)) (middle_y + 10);
       draw_string line1;
@@ -168,23 +181,24 @@ module Make (P : PARAMS) = struct
       draw_string line2)
   ;;
 
-  let draw { ball; level; score; paddle; status } =
-    LEVEL.draw_shadow level;
-    PADDLE.draw_shadow paddle;
-    BALL.draw_shadow ball;
-    LEVEL.draw level;
-    PADDLE.draw paddle;
-    BALL.draw ball;
-    draw_score score;
-    draw_pv ball;
-    if status = GameOver then
-      draw_game_over score
-    else if status = Victory then
-      draw_victory score
-    else if status = Paused then
+  let draw state =
+    LEVEL.draw_shadow state.level;
+    PADDLE.draw_shadow state.paddle;
+    BALL.draw_shadow state.ball;
+    LEVEL.draw state.level;
+    PADDLE.draw state.paddle;
+    BALL.draw state.ball;
+    draw_score state.score;
+    draw_pv state.ball;
+    if state.status = GameOver then
+      draw_game_over state
+    else if state.status = Victory then
+      draw_victory state
+    else if state.status = Paused then
       draw_pause ();
     (* Debug *)
     Graphics.(
+      let ball = state.ball in
       set_color P.text_color;
       moveto 100 15;
       draw_string (Format.sprintf "ball x: %d" (int_of_float BALL.(ball.x)));

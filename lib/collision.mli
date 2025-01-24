@@ -13,7 +13,7 @@ module Make (P : PARAMS) : sig
     -> Ball.Make(P).t * Level.Make(P).t * int
 
   (** [with_box ball] renvoie la balle [ball] après collision avec les bords de la fenêtre de jeu (si collision il y a). *)
-  val with_box : Ball.Make(P).t -> Ball.Make(P).t
+  val with_box : Box.Make(P).t -> Ball.Make(P).t -> Ball.Make(P).t
 
   (** [with_paddle ball paddle] renvoie la balle [ball] après collision avec la raquette [paddle] (si collision il y a). *)
   val with_paddle : Ball.Make(P).t -> Paddle.Make(P).t -> Ball.Make(P).t

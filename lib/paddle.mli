@@ -14,7 +14,7 @@ module Make (P : PARAMS) : sig
   val make : t
 
   (** [update mouse_x paddle ] met à jour la position de la raquette [paddle] en fonction de l'abscisse de la souris [mouse_x]. *)
-  val update : float -> t -> t
+  val update : Box.Make(P).t -> float -> t -> t
 
   (** [draw p] dessine la raquette [p] en noir. *)
   val draw : t -> unit

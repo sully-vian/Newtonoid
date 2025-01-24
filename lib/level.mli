@@ -20,5 +20,5 @@ module Make (P : PARAMS) : sig
   val example_level : t
 
   (** [load_level filename] charge un niveau à partir d'un fichier. *)
-  val load_level : string -> t
+  val load_level : Box.Make(P).t -> string -> t
 end

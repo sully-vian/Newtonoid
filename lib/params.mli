@@ -32,10 +32,6 @@ module type PARAMS = sig
 
   (* Box params *)
   val box_marge : float
-  val box_infx : float
-  val box_infy : float
-  val box_supx : float
-  val box_supy : float
 
   (* Colors *)
   val ball_color : Graphics.color
@@ -53,7 +49,4 @@ end
 module Make (ConfigFile : sig
   (* les valeurs de la config *)
   val config_filename : string
-
-  (* le niveau pour calculer la taille de la fenêtre *)
-  val level_filename : string
 end) : PARAMS

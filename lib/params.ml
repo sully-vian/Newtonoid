@@ -21,10 +21,6 @@ module type PARAMS = sig
   val shadow_offset_x : int
   val shadow_offset_y : int
   val box_marge : float
-  val box_infx : float
-  val box_infy : float
-  val box_supx : float
-  val box_supy : float
   val ball_color : Graphics.color
   val paddle_color : Graphics.color
   val brick_weak_color : Graphics.color
@@ -39,18 +35,12 @@ end
 
 module Make (ConfigFile : sig
   val config_filename : string
-  val level_filename : string
 end) : PARAMS = struct
   (* liste associant les clés aux valeurs *)
   let config =
     let chan = open_in ConfigFile.config_filename in
     let key_value_pairs = Utils.parse_key_value_pairs chan in
     key_value_pairs
-  ;;
-
-  let lvl_w_h =
-    LoadLevel.get_dimensions
-      (LoadLevel.char_list_list_of_channel (open_in ConfigFile.level_filename))
   ;;
 
   (* méthodes de parsing *)
@@ -81,10 +71,6 @@ end) : PARAMS = struct
   let shadow_offset_x = assoc_int "shadow_offset_x"
   let shadow_offset_y = assoc_int "shadow_offset_y"
   let box_marge = assoc_float "box_marge"
-  let box_infx = assoc_float "box_infx"
-  let box_infy = assoc_float "box_infy"
-  let box_supx = (float_of_int (fst lvl_w_h) *. brick_w) +. box_infx
-  let box_supy = (float_of_int (snd lvl_w_h) *. brick_h) +. box_infy
   let ball_color = assoc_color "ball_color"
   let paddle_color = assoc_color "paddle_color"
   let brick_weak_color = assoc_color "brick_weak_color"
