@@ -51,7 +51,6 @@ let main () =
           Graphics.set_color P.bg_color;
           Graphics.fill_rect 0 0 (Graphics.size_x ()) (Graphics.size_y ());
           STATE.draw state;
-          BOX.draw box;
           Graphics.synchronize ();
           Unix.sleepf P.dt;
           if LEVEL.is_finished STATE.(state.level) then

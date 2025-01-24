@@ -92,28 +92,31 @@ module Make (P : PARAMS) = struct
 
   let is_alive { ball; _ } = BALL.(ball.pv) > 0
 
-  (** [unfold f flux e] est une sorte de [Flux.unfold] où [f] prend un second argument issu de [flux]. On l'utilise ici pour créer le flux d'états qui doit être généré avec les méthodes de mise-à-jour ET avec le flux de la souris. Son utilisation est moins abstraite si on explicite son type comme tel: [('mouse -> 'state -> 'state option) -> 'mouse Flux.t -> 'state -> 'state Flux.t] *)
-  let rec unfold2 f flux e =
+  (** [unfold f flux e] est une sorte de [Flux.unfold] où [f] prend un second argument issu de [flux]. On l'utilise ici pour créer le flux d'états qui doit être généré avec les méthodes de mise-à-jour ET avec le flux de la souris. Son utilisation est moins abstraite si on explicite son type comme tel: [('mouse -> 'state -> 'state option) -> 'mouse Flux.t -> 'level list -> 'state -> 'state Flux.t] *)
+  let rec unfold2 f flux l e =
     Tick
       (lazy
         (match Flux.uncons flux with
          | None -> None
          | Some (flux_h, flux_t) ->
-           (match f flux_h e with
+           (match f flux_h l e with
             | None -> None
-            | Some e' -> Some (e, unfold2 f flux_t e'))))
+            | Some e' -> Some (e, unfold2 f flux_t l e'))))
   ;;
 
-  let make_flux mouse_flux initial_state =
-    let f mouse state =
+  let make_flux mouse_flux (next_levels : LEVEL.t list) initial_state =
+    let f mouse next_levels state =
       if not (is_alive state) then
         Some (update mouse { state with status = GameOver })
-      else if LEVEL.is_finished state.level then
-        Some (update mouse { state with status = Victory })
-      else
+      else if LEVEL.is_finished state.level then (
+        match next_levels with
+        | [] -> None
+        | next_level :: next_levels_t ->
+          Some (update mouse { state with level = next_level; status = Init })
+      ) else
         Some (update mouse state)
     in
-    unfold2 f mouse_flux initial_state
+    unfold2 f mouse_flux next_levels initial_state
   ;;
 
   let draw_score score =

@@ -30,7 +30,7 @@ module Make (P : PARAMS) : sig
   val is_alive : t -> bool
 
   (** [make_flux mouse_flux initial_state] crée le flux complet d'états à partir du flux de la souris [mouse_flux] et l'état initial [initial_state] *)
-  val make_flux : (float * bool) Flux.t -> t -> t Flux.t
+  val make_flux : (float * bool) Flux.t -> Level.Make(P).t list -> t -> t Flux.t
 
   (** [draw state] dessine l'état [state] *)
   val draw : t -> unit
