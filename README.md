@@ -3,11 +3,17 @@
 ## TODO
 
 - quadtree (partition quadrillée qui force le découpage du quadtree)
-- passage au niveau suivant: fermer et réouvrir une fenêtre avec la taille associé au nouveau niveau. Ça veut dire qu'on peut pas avoir la taille de fenêtre dans les params et qu'il faut même tej le niveau des arguments du param.
-
 - sons
 - briques avec pouvoirs (+1 vie, balle ralentie, raquette élargie)
 - tests unitaires
+
+## passage au niveau suivant
+
+On a inclu la box à l'état, mais on pourrait l'inclure au niveau même. Comme ça, `load_level` nous renvoie un truc propre avec tout ce dont on a besoin.
+
+Ensuite, on adapte `make_flux` pour qu'il change de niveau dans le cas d'une victoire. Donc `make_flux` prend un arg `levels` supplémentaire.
+
+Problème: faut resize la window entre chaque niveau.
 
 ## Pour compiler
 
