@@ -5,6 +5,7 @@ module Make (P : PARAMS) = struct
   module BALL = Ball.Make (P)
   module PADDLE = Paddle.Make (P)
   module BOX = Box.Make (P)
+  module LEVEL = Level.Make (P)
 
   let with_brick (ball : BALL.t) (brick : BRICK.t) =
     let closest_x = max BRICK.(brick.x) (min BALL.(ball.x) BRICK.(brick.x +. brick.w)) in
@@ -56,7 +57,7 @@ module Make (P : PARAMS) = struct
   let update_score_and_level ball brick level score =
     if BRICK.is_alive brick then
       (* si la brique est vivante, on la garde *)
-      ball, brick :: level, score
+      ball, LEVEL.{ level with bricks = brick :: level.bricks }, score
     else (
       (* sinon, on récupère son xp *)
       let xp = BRICK.xp brick in
@@ -65,12 +66,13 @@ module Make (P : PARAMS) = struct
   ;;
 
   let rec with_level ball level score =
-    match level with
+    match LEVEL.(level.bricks) with
     | [] -> ball, level, score
-    | brick :: level_t ->
+    | brick :: bricks_t ->
       (* collision courante *)
       let ball_after, brick_after = with_brick ball brick in
       (* reste du niveau *)
+      let level_t = LEVEL.{ level with bricks = bricks_t } in
       let final_ball, level_after, score_after = with_level ball_after level_t score in
       update_score_and_level final_ball brick_after level_after score_after
   ;;

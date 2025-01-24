@@ -26,7 +26,7 @@ let main () =
   let module STATE = State.Make (P) in
   let module BOX = Box.Make (P) in
   let module LEVEL = Level.Make (P) in
-  let box = BOX.make 10. 10. 800. 600. in (* TODO: choisir les bonnes valeurs *)
+  let box = BOX.make 10. 10. 1000. 600. in (* TODO: choisir les bonnes valeurs *)
   (* format de la fenêtre graphique *)
   let graphic_format =
     let open BOX in
@@ -40,8 +40,8 @@ let main () =
     match levels with
     | [] -> current_score
     | level_file :: rest ->
-      let level = LEVEL.load_level box level_file in
-      let initial_state = STATE.make box level current_score in
+      let level = LEVEL.load_level level_file in
+      let initial_state = STATE.make level current_score in
       let rec play_level state_flux =
         match Flux.uncons state_flux with
         | None -> current_score

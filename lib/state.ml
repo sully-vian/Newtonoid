@@ -21,20 +21,18 @@ module Make (P : PARAMS) = struct
     ; score : int
     ; paddle : PADDLE.t
     ; status : game_status
-    ; box : BOX.t
     }
 
-  let make box level previous_score =
+  let make level previous_score =
     { ball = BALL.make
     ; level
     ; score = previous_score
     ; paddle = PADDLE.make
     ; status = Init
-    ; box
     }
   ;;
 
-  let update (x_mouse, click) { ball; level; score; paddle; status; box } =
+  let update (x_mouse, click) { ball; level; score; paddle; status } =
     if click then
       (* dodo pour éviter de comptabiliser plusieurs clicks en une frame *)
       Unix.sleepf 0.1;
@@ -46,9 +44,9 @@ module Make (P : PARAMS) = struct
         else
           Paused
       in
-      { ball; level; score; paddle; status = status'; box }
+      { ball; level; score; paddle; status = status' }
     | Init ->
-      let paddle' = PADDLE.update box x_mouse paddle in
+      let paddle' = PADDLE.update LEVEL.(level.box) x_mouse paddle in
       let ball' =
         let x' = PADDLE.(paddle'.x +. (paddle'.w /. 2.)) in
         let y' = PADDLE.(paddle'.y +. paddle'.h) +. BALL.(ball.r) in
@@ -61,15 +59,15 @@ module Make (P : PARAMS) = struct
         else
           Init
       in
-      { ball = ball'; level; score; paddle = paddle'; status = status'; box }
+      { ball = ball'; level; score; paddle = paddle'; status = status' }
     | Playing ->
       (* m-à-j de la raquette puis collisions et test de survie *)
-      let paddle' = PADDLE.update box x_mouse paddle in
+      let paddle' = PADDLE.update LEVEL.(level.box) x_mouse paddle in
       let ball', level', score' =
         let after_update = BALL.move ball in
         COLLISION.(
           let after_paddle = with_paddle after_update paddle in
-          let after_box = with_box box after_paddle in
+          let after_box = with_box LEVEL.(level.box) after_paddle in
           let after_level = with_level after_box level score in
           after_level)
       in
@@ -86,16 +84,10 @@ module Make (P : PARAMS) = struct
           (* vie perdue on replace la balle sur la raquette *)
           Playing
       in
-      { ball = ball'
-      ; level = level'
-      ; score = score'
-      ; paddle = paddle'
-      ; status = status'
-      ; box
-      }
+      { ball = ball'; level = level'; score = score'; paddle = paddle'; status = status' }
     | _ ->
       (* on ne met pas à jour l'état lorsque le jeu est fini *)
-      { ball; level; score; paddle; status; box }
+      { ball; level; score; paddle; status }
   ;;
 
   let is_alive { ball; _ } = BALL.(ball.pv) > 0
@@ -158,7 +150,7 @@ module Make (P : PARAMS) = struct
       let line2 = Format.sprintf "Final Score: %d" state.score in
       let line1_w, _ = text_size line1 in
       let line2_w, _ = text_size line2 in
-      let middle_x, middle_y = middle state.box in
+      let middle_x, middle_y = middle LEVEL.(state.level.box) in
       set_color red;
       moveto (middle_x - (line1_w / 2)) (middle_y + 10);
       draw_string line1;
@@ -173,7 +165,7 @@ module Make (P : PARAMS) = struct
       let line2 = Format.sprintf "Final Score: %d" state.score in
       let line1_w, _ = text_size line1 in
       let line2_w, _ = text_size line2 in
-      let middle_x, middle_y = middle state.box in
+      let middle_x, middle_y = middle LEVEL.(state.level.box) in
       set_color green;
       moveto (middle_x - (line1_w / 2)) (middle_y + 10);
       draw_string line1;
