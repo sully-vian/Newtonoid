@@ -36,6 +36,17 @@ La plupart des modules contiennent un sous-module foncteur (au sens d'OCaml) par
 
 Chaque objet du jeu est modélisé par un type enregistrement afin de permettre un accès efficace aux différents champs (par opposition aux tuples qui nécessitent du filtrage par motif). Chaque type objet est appelé \texttt{t} et est défini dans son propre module qui regroupe les fonctions associées. Parmis celles-ci, on note surtout \texttt{make}, \texttt{draw} et \texttt{draw\_shadow} et qui permettent respectivement de créer un objet, de l'afficher à l'écran et de dessiner son ombre.
 
+\section{États de jeu}
+
+% TODO
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{img/graph.png}
+    \caption{Graphe de transition des états de jeu}
+    \label{fig:graph}
+\end{figure}
+
 \section{Niveaux de jeu}
 
 Initialement, un niveau de jeu était défini en OCaml et chaque brique ajoutée séparément. C'était à la fois verbeux et peu pratique. Nous avons donc "développé" une syntaxe très simple pour définir un niveau textuellement. Chaque type de brique est représenté par un caractère différent et l'air est représenté par un espace. Les bordures sont fixées avec les caractères tiret et barre verticale. Deux exemples de niveaux sont donnés à la figure \ref{fig:level.txt}.

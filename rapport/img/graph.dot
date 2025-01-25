@@ -1,0 +1,33 @@
+digraph G {
+    rankdir = TB;
+    edge [fontname = "Courier";];
+    "Init";
+    "Playing";
+    "GameOver";
+    "Victory";
+    "Paused";
+    "SwitchLevel";
+    "Quit";
+    "None" [shape = none;];
+    "" [shape = none;];
+    
+    "" -> Init;
+    
+    "Paused" -> "Playing" [label = "click"; color = "blue"; fontcolor = "blue";];
+    
+    "GameOver" -> "Quit" [label = "click"; color = "blue"; fontcolor = "blue";];
+    
+    "Victory" -> "SwitchLevel" [label = "click"; color = "blue"; fontcolor = "blue";];
+    
+    "Init" -> "Playing" [label = "click"; color = "blue"; fontcolor = "blue";];
+    
+    "Playing" -> "GameOver" [label = "ball.pv=0"; color = "red"; fontcolor = "red";];
+    "Playing" -> "Init" [label = "ball.pv--"; color = "red"; fontcolor = "red";];
+    "Playing" -> "Paused" [label = "click"; color = "blue"; fontcolor = "blue";];
+    "Playing" -> "Victory" [label = "level.finished"; color = "green"; fontcolor = "green";];
+    
+    "SwitchLevel" -> "Init" [label = "!next_levels.empty"; color = green; fontcolor = "green";];
+    "SwitchLevel" -> "None" [label = "next_levels.empty"; color = green; fontcolor = "green";];
+    
+    "Quit" -> "None" [label = "true";];
+}
