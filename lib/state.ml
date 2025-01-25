@@ -14,6 +14,8 @@ module Make (P : PARAMS) = struct
     | GameOver
     | Victory
     | Paused
+    | SwitchLevel
+    | Quit
 
   type t =
     { ball : BALL.t
@@ -45,6 +47,22 @@ module Make (P : PARAMS) = struct
           Paused
       in
       { ball; level; score; paddle; status = status' }
+    | GameOver ->
+      let status' =
+        if click then
+          Quit
+        else
+          GameOver
+      in
+      { ball; level; score; paddle; status = status' }
+    | Victory ->
+      let status' =
+        if click then
+          SwitchLevel
+        else
+          Victory
+      in
+      { ball; level; score; paddle; status = status' }
     | Init ->
       let paddle' = PADDLE.update LEVEL.(level.box) x_mouse paddle in
       let ball' =
@@ -72,55 +90,55 @@ module Make (P : PARAMS) = struct
           after_level)
       in
       let status' =
-        if BALL.(ball.pv > ball'.pv) then
-          (* vie perdue *)
+        if BALL.(ball'.pv) = 0 then
+          (* partie perdue *)
+          GameOver
+        else if BALL.(ball.pv > ball'.pv) then
+          (* vie perdue on replace la balle sur la raquette *)
           Init
         else if click then
           (* jeu mis en pause *)
           Paused
         else if LEVEL.is_finished level' then
+          (* niveau terminé *)
           Victory
         else
-          (* vie perdue on replace la balle sur la raquette *)
           Playing
       in
       { ball = ball'; level = level'; score = score'; paddle = paddle'; status = status' }
-    | _ ->
-      (* on ne met pas à jour l'état lorsque le jeu est fini *)
-      { ball; level; score; paddle; status }
+    | SwitchLevel ->
+      (* devrait pas arriver *)
+      print_endline "SwitchLevel";
+      exit 1
+    | Quit ->
+      (* devrait pas arriver *)
+      print_endline "Quit";
+      exit 1
   ;;
 
   let is_alive { ball; _ } = BALL.(ball.pv) > 0
 
-  (** [unfold f flux e] est une sorte de [Flux.unfold] où [f] prend un second argument issu de [flux]. On l'utilise ici pour créer le flux d'états qui doit être généré avec les méthodes de mise-à-jour ET avec le flux de la souris. Son utilisation est moins abstraite si on explicite son type comme tel: [('mouse -> 'state -> 'state option) -> 'mouse Flux.t -> 'level list -> 'state -> 'state Flux.t] *)
-  let rec unfold2 f flux l e =
-    Tick
-      (lazy
-        (match Flux.uncons flux with
-         | None -> None
-         | Some (flux_h, flux_t) ->
-           (match f flux_h l e with
-            | None -> None
-            | Some e' -> Some (e, unfold2 f flux_t l e'))))
-  ;;
-
-  let make_flux mouse_flux (next_levels : LEVEL.t list) initial_state =
-    let f mouse next_levels state =
-      if not (is_alive state) then
-        Some (update mouse { state with status = GameOver })
-      else if LEVEL.is_finished state.level then (
+  let make_flux mouse_flux (initial_state, next_levels) =
+    let f mouse (state, next_levels) =
+      if state.status = SwitchLevel then (
         match next_levels with
         | [] -> None
         | next_level :: next_levels_t ->
-          Some (update mouse { state with level = next_level; status = Init })
-      ) else
-        Some (update mouse state)
+          let box = LEVEL.(next_level.box) in
+          BOX.resize_window box;
+          Some
+            (update mouse { state with level = next_level; status = Init }, next_levels_t)
+      ) else if state.status = Quit then
+        None
+      else
+        Some (update mouse state, next_levels)
     in
-    unfold2 f mouse_flux next_levels initial_state
+    Flux.map fst (Utils.unfold2 f mouse_flux (initial_state, next_levels))
   ;;
 
   let draw_score score =
     Graphics.(
+      set_font P.medium_font;
       set_color P.text_color;
       moveto 15 30;
       draw_string (Format.sprintf "Score : %d" score))
@@ -128,52 +146,82 @@ module Make (P : PARAMS) = struct
 
   let draw_pv ball =
     Graphics.(
+      set_font P.medium_font;
       set_color P.text_color;
       moveto 15 15;
       draw_string (Format.sprintf "PVs : %d" BALL.(ball.pv)))
   ;;
 
-  let draw_pause () =
+  let draw_pause state =
+    let line1 = "Paused" in
+    let line2 = "Click to resume" in
     Graphics.(
+      set_font P.large_font;
+      let line1_w, _ = text_size line1 in
+      let middle_x, middle_y = BOX.middle LEVEL.(state.level.box) in
       set_color P.text_color;
-      moveto 300 15;
-      draw_string "Pause")
+      moveto (middle_x - (line1_w / 2)) (middle_y + 10);
+      draw_string line1;
+      set_font P.medium_font;
+      let line2_w, _ = text_size line2 in
+      moveto (middle_x - (line2_w / 2)) (middle_y - 10);
+      draw_string line2)
   ;;
 
-  let middle box =
-    let open BOX in
-    ( int_of_float ((box.supx -. box.infx) /. 2.)
-    , int_of_float ((box.supy -. box.infy) /. 2.) )
-  ;;
-
-  (* TODO: changer la taille du texte *)
   let draw_game_over state =
+    let line1 = "Game Over !" in
+    let line2 = Format.sprintf "Final Score: %d" state.score in
+    let line3 = "Click to quit game" in
     Graphics.(
-      let line1 = "Game Over !" in
-      let line2 = Format.sprintf "Final Score: %d" state.score in
+      set_font P.large_font;
       let line1_w, _ = text_size line1 in
       let line2_w, _ = text_size line2 in
-      let middle_x, middle_y = middle LEVEL.(state.level.box) in
+      let middle_x, middle_y = BOX.middle LEVEL.(state.level.box) in
       set_color red;
       moveto (middle_x - (line1_w / 2)) (middle_y + 10);
       draw_string line1;
       moveto (middle_x - (line2_w / 2)) (middle_y - 10);
-      draw_string line2)
+      draw_string line2;
+      (* quit game *)
+      set_font P.medium_font;
+      let line3_w, _ = text_size line3 in
+      set_color P.text_color;
+      moveto (middle_x - (line3_w / 2)) (middle_y - 30);
+      draw_string line3)
   ;;
 
-  (* TODO: changer la taille du texte *)
-  let draw_victory state =
+  let draw_init state =
+    let line = "Click to throw ball" in
     Graphics.(
-      let line1 = "Victory !" in
-      let line2 = Format.sprintf "Final Score: %d" state.score in
+      set_font P.medium_font;
+      let line_w, _ = text_size line in
+      let middle_x, middle_y = BOX.middle LEVEL.(state.level.box) in
+      set_color P.text_color;
+      moveto (middle_x - (line_w / 2)) (middle_y - 10);
+      draw_string line)
+  ;;
+
+  let draw_victory state =
+    let line1 = "Victory !" in
+    let line2 = Format.sprintf "Score: %d" state.score in
+    let line3 = "Click to go to the next level (or quit if it's the last one)" in
+    Graphics.(
+      (* victory message *)
+      set_font P.large_font;
       let line1_w, _ = text_size line1 in
       let line2_w, _ = text_size line2 in
-      let middle_x, middle_y = middle LEVEL.(state.level.box) in
+      let middle_x, middle_y = BOX.middle LEVEL.(state.level.box) in
       set_color green;
       moveto (middle_x - (line1_w / 2)) (middle_y + 10);
       draw_string line1;
       moveto (middle_x - (line2_w / 2)) (middle_y - 10);
-      draw_string line2)
+      draw_string line2;
+      (* goto next level *)
+      set_font P.medium_font;
+      let line3_w, _ = text_size line3 in
+      set_color P.text_color;
+      moveto (middle_x - (line3_w / 2)) (middle_y - 30);
+      draw_string line3)
   ;;
 
   let draw state =
@@ -185,15 +233,18 @@ module Make (P : PARAMS) = struct
     BALL.draw state.ball;
     draw_score state.score;
     draw_pv state.ball;
-    if state.status = GameOver then
-      draw_game_over state
-    else if state.status = Victory then
-      draw_victory state
-    else if state.status = Paused then
-      draw_pause ();
+    (* dessiner spécifiquement l'état *)
+    (match state.status with
+     | Init -> draw_init
+     | GameOver -> draw_game_over
+     | Victory -> draw_victory
+     | Paused -> draw_pause
+     | _ -> fun _ -> ())
+      state;
     (* Debug *)
     Graphics.(
       let ball = state.ball in
+      set_font P.medium_font;
       set_color P.text_color;
       moveto 100 15;
       draw_string (Format.sprintf "ball x: %d" (int_of_float BALL.(ball.x)));

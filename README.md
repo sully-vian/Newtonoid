@@ -7,14 +7,6 @@
 - briques avec pouvoirs (+1 vie, balle ralentie, raquette élargie)
 - tests unitaires
 
-## passage au niveau suivant
-
-On a inclu la box à l'état, mais on pourrait l'inclure au niveau même. Comme ça, `load_level` nous renvoie un truc propre avec tout ce dont on a besoin.
-
-Ensuite, on adapte `make_flux` pour qu'il change de niveau dans le cas d'une victoire. Donc `make_flux` prend un arg `levels` supplémentaire.
-
-Problème: faut resize la window entre chaque niveau.
-
 ## Pour compiler
 
 ```bash

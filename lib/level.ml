@@ -33,19 +33,16 @@ module Make (P : PARAMS) = struct
   let draw_shadow { bricks; _ } = List.iter BRICK.draw_shadow bricks
 
   let level_dims filename =
-    LoadLevel.get_dimensions (LoadLevel.char_list_list_of_channel (open_in filename))
+    let lvl_width, lvl_height =
+      LoadLevel.get_dimensions (LoadLevel.char_list_list_of_channel (open_in filename))
+    in
+    float_of_int lvl_width *. P.brick_w, float_of_int lvl_height *. P.brick_h
   ;;
 
-  let load_level filename =
+  let load filename =
     let open BOX in
     let lvl_width, lvl_height = level_dims filename in
-    let box =
-      BOX.make
-        P.box_marge
-        P.box_marge
-        (float_of_int lvl_width *. P.brick_w)
-        (float_of_int lvl_height *. P.brick_h)
-    in
+    let box = BOX.make P.box_marge P.box_marge lvl_width lvl_height in
     let chan = open_in filename in
     let chars = LoadLevel.char_list_of_channel chan in
     let rec aux x y acc chars =
@@ -60,7 +57,9 @@ module Make (P : PARAMS) = struct
          | '=' -> aux (x +. P.brick_w) y (make_brick x y BRICK.Standard :: acc) t
          | '+' -> aux (x +. P.brick_w) y (make_brick x y BRICK.Weak :: acc) t
          | ' ' -> aux (x +. P.brick_w) y acc t
-         | _ -> failwith ("Invalid character in level file:" ^ String.make 1 c))
+         | _ ->
+           failwith
+             (Printf.sprintf "Invalid character '%c' in level file '%s'" c filename))
     in
     let bricks = aux 0. box.supy [] chars in
     { bricks; box }

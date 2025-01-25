@@ -19,9 +19,12 @@ module Make (P : PARAMS) : sig
   (** [draw_shadow l] dessine l'ombre du niveau [l]. *)
   val draw_shadow : t -> unit
 
+  (* TODO: doc *)
+  val level_dims : string -> float * float
+
   (** [example_level] est un exemple de niveau. *)
   val example_level : t
 
-  (** [load_level filename] charge un niveau à partir d'un fichier. *)
-  val load_level : string -> t
+  (** [load filename] charge un niveau à partir d'un fichier. *)
+  val load : string -> t
 end

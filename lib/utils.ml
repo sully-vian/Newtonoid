@@ -1,3 +1,15 @@
+let rec unfold2 f flux e =
+  let open Iterator in
+  Tick
+    (lazy
+      (match Flux.uncons flux with
+       | None -> None
+       | Some (flux_h, flux_t) ->
+         (match f flux_h e with
+          | None -> None
+          | Some e' -> Some (e, unfold2 f flux_t e'))))
+;;
+
 let parse_key_value_pairs chan =
   let rec aux chan acc =
     try

@@ -1,3 +1,7 @@
+(** [unfold f flux e] est une sorte de [Flux.unfold] où [f] prend un second argument issu de [flux]. On l'utilise ici pour créer le flux d'états qui doit être généré avec les méthodes de mise-à-jour ET avec le flux de la souris. Son utilisation est moins abstraite si on explicite son type comme tel: [('mouse -> 'state -> 'state option) -> 'mouse Flux.t -> 'level list -> 'state -> 'state Flux.t] *)
+
+val unfold2 : ('a -> 'b -> 'b option) -> 'a Iterator.Flux.t -> 'b -> 'b Iterator.Flux.t
+
 (** [parse_key_value_pairs chan] lit les paires clé-valeur d'un canal d'entrée [chan] et les renvoie sous forme de liste. *)
 val parse_key_value_pairs : in_channel -> (string * string) list
 

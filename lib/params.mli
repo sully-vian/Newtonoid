@@ -29,9 +29,11 @@ module type PARAMS = sig
   val dt : float
   val shadow_offset_x : int
   val shadow_offset_y : int
-
-  (* Box params *)
   val box_marge : float
+
+  (* fonts *)
+  val medium_font : string
+  val large_font : string
 
   (* Colors *)
   val ball_color : Graphics.color

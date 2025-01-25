@@ -9,6 +9,8 @@ module Make (P : PARAMS) : sig
     | GameOver
     | Victory
     | Paused
+    | SwitchLevel
+    | Quit
 
   (** [State.t] représente un état du jeu à partir de la balle, du niveau et du
   score *)
@@ -29,8 +31,8 @@ module Make (P : PARAMS) : sig
   (** [is_alive state] renvoie [true] si la balle a encore des points de vie et false sinon. *)
   val is_alive : t -> bool
 
-  (** [make_flux mouse_flux initial_state] crée le flux complet d'états à partir du flux de la souris [mouse_flux] et l'état initial [initial_state] *)
-  val make_flux : (float * bool) Flux.t -> Level.Make(P).t list -> t -> t Flux.t
+  (** [make_flux mouse_flux (initial_state, next_levels)] crée le flux complet d'états à partir du flux de la souris [mouse_flux] et l'état initial [initial_state] *)
+  val make_flux : (float * bool) Flux.t -> t * Level.Make(P).t list -> t Flux.t
 
   (** [draw state] dessine l'état [state] *)
   val draw : t -> unit
