@@ -1,0 +1,7 @@
+(library
+ (name lib_test)
+ (modules lib_test ball_test brick_test box_test level_test paddle_test state_test utils_test)
+ (libraries libnewtonoid)
+ (inline_tests)
+ (preprocess
+  (pps ppx_inline_test)))

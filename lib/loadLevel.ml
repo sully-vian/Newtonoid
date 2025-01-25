@@ -1,3 +1,5 @@
+(* TODO: rename file to levelUtils.ml *)
+
 let char_list_of_string s = List.of_seq (String.to_seq s)
 
 let char_list_list_of_channel chan =

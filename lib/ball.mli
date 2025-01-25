@@ -17,18 +17,18 @@ module Make (P : PARAMS) : sig
     ; pv : int
     }
 
-  (** [make] crée une balle avec les paramètres de [P] et de vitesse nulle. *)
+  (** [make] crée une balle avec les paramètres de [P] et de vitesse horizontale nulle. *)
   val make : t
 
   (** [move ball] déplace la balle [ball] en fonction de sa vitesse et de [P.dt]. *)
   val move : t -> t
 
-  (** [bound_speed ball] renvoie la balle [ball] avec des vitesses rrespectant les bornes définies dans [P] *)
+  (** [bound_speed ball] renvoie la balle [ball] avec des vitesses respectant les bornes définies dans [P] *)
   val bound_speed : t -> t
 
   (** [draw ball] dessine un cercle centré sur les coordonnées de la balle [ball] de la couleur choisie dans [P]. *)
   val draw : t -> unit
 
-  (** [draw_shadow ball] dessine  *)
+  (** [draw_shadow ball] dessine l'ombre de la balle [ball] de la couleur choisie dans [P] et avec les décalages définis dans [P]. *)
   val draw_shadow : t -> unit
 end

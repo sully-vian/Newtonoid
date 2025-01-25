@@ -32,7 +32,7 @@ module Make (P : PARAMS) = struct
 
   let draw_shadow { bricks; _ } = List.iter BRICK.draw_shadow bricks
 
-  let level_dims filename =
+  let dims filename =
     let lvl_width, lvl_height =
       LoadLevel.get_dimensions (LoadLevel.char_list_list_of_channel (open_in filename))
     in
@@ -41,7 +41,7 @@ module Make (P : PARAMS) = struct
 
   let load filename =
     let open BOX in
-    let lvl_width, lvl_height = level_dims filename in
+    let lvl_width, lvl_height = dims filename in
     let box = BOX.make P.box_marge P.box_marge lvl_width lvl_height in
     let chan = open_in filename in
     let chars = LoadLevel.char_list_of_channel chan in

@@ -35,7 +35,7 @@ let main () =
   let module LEVEL = Level.Make (P) in
   let levels = List.map LEVEL.load level_files in
   let first_level = List.hd levels in
-  let lvl_width, lvl_height = LEVEL.level_dims (List.hd level_files) in
+  let lvl_width, lvl_height = LEVEL.dims (List.hd level_files) in
   let box = BOX.make P.box_marge P.box_marge lvl_width lvl_height in
   (* format de la fenêtre graphique *)
   let graphic_format =

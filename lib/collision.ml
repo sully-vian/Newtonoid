@@ -60,7 +60,7 @@ module Make (P : PARAMS) = struct
       ball, LEVEL.{ level with bricks = brick :: level.bricks }, score
     else (
       (* sinon, on récupère son xp *)
-      let xp = BRICK.xp brick in
+      let xp = BRICK.get_xp brick in
       ball, level, score + xp
     )
   ;;
