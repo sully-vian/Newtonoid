@@ -5,6 +5,7 @@ module P = Params.Make (struct
 end)
 
 module PADDLE = Paddle.Make (P)
+module BOX = Box.Make (P)
 open PADDLE
 
 let%test_module "PADDLE.make" =
@@ -21,7 +22,7 @@ let%test_module "PADDLE.make" =
 
 let%test_module "PADDLE.update" =
   (module struct
-    let box = Box.Make(P).make 0. 0. 100. 100.
+    let box = BOX.make 0. 0. 100. 100.
     let paddle = PADDLE.make
 
     let%test "update paddle position" =

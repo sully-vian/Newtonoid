@@ -5,11 +5,13 @@ module P = Params.Make (struct
 end)
 
 module LEVEL = Level.Make (P)
+module BOX = Box.Make (P)
+module BRICK = Brick.Make (P)
 open LEVEL
 
 let%test_module "LEVEL.make" =
   (module struct
-    let box = Box.Make(P).make 0. 0. 100. 100.
+    let box = BOX.make 0.0 0.0 100.0 100.0
     let bricks = [make_brick 10. 10. BRICK.Standard; make_brick 20. 20. BRICK.Strong]
     let level = make bricks box
 
@@ -20,9 +22,9 @@ let%test_module "LEVEL.make" =
 
 let%test_module "LEVEL.is_finished" =
   (module struct
-    let box = Box.Make(P).make 0. 0. 100. 100.
+    let box = BOX.make 0. 0. 100. 100.
     let bricks_alive = [make_brick 10. 10. BRICK.Standard]
-    let bricks_dead = [make_brick 10. 10. BRICK.Standard; make_brick 20. 20. BRICK.Strong]
+    let bricks_dead = []
     let level_alive = make bricks_alive box
     let level_dead = make bricks_dead box
 
@@ -47,7 +49,9 @@ let%test_module "LEVEL.load" =
     let level = load filename
 
     let%test "level loaded" = List.length level.bricks > 0
-    let%test "level box" = level.box.BOX.width > 0. && level.box.BOX.height > 0.
+    let%test "level box" = 
+    let box = level.box in 
+    BOX.(box.supx > box.infx && box.supy > box.infy)
   end)
 ;;
 
@@ -56,6 +60,8 @@ let%test_module "LEVEL.example_level" =
     let level = example_level
 
     let%test "example level bricks" = List.length level.bricks > 0
-    let%test "example level box" = level.box.BOX.width > 0. && level.box.BOX.height > 0.
+    let%test "example level box" = 
+    let box = level.box in 
+    BOX.(box.supx > box.infx && box.supy > box.infy)
   end)
 ;;

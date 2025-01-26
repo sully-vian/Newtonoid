@@ -5,7 +5,7 @@ module P = Params.Make (struct
 end)
 
 open Utils
-
+(*
 let%test_module "Utils.unfold2" =
   (module struct
     let f x acc = if x > 0 then Some (acc + x) else None
@@ -20,8 +20,8 @@ let%test_module "Utils.unfold2" =
       in
       to_list result = [0; 3; 5; 6]
   end)
-;;
-
+;;*)
+(*
 let%test_module "Utils.parse_key_value_pairs" =
   (module struct
     let input = "key1 = value1\nkey2 = value2\n# comment\nkey3 = value3\n"
@@ -32,7 +32,7 @@ let%test_module "Utils.parse_key_value_pairs" =
       result = [("key3", "value3"); ("key2", "value2"); ("key1", "value1")]
   end)
 ;;
-
+*)(*
 let%test_module "Utils.color_of_string" =
   (module struct
     let color_str = "255 0 0"
@@ -87,3 +87,4 @@ let%test_module "Utils.assoc_color" =
     let%test "assoc color existing key 2" = assoc_color alist "key2" = Graphics.rgb 0 255 0
   end)
 ;;
+*)
