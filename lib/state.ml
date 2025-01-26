@@ -138,7 +138,7 @@ module Make (P : PARAMS) = struct
 
   let draw_score score =
     Graphics.(
-      set_font P.medium_font;
+      (*set_font P.medium_font;*)
       set_color P.text_color;
       moveto 15 30;
       draw_string (Format.sprintf "Score : %d" score))
@@ -156,13 +156,13 @@ module Make (P : PARAMS) = struct
     let line1 = "Paused" in
     let line2 = "Click to resume" in
     Graphics.(
-      set_font P.large_font;
+      (*set_font P.large_font;*)
       let line1_w, _ = text_size line1 in
       let middle_x, middle_y = BOX.middle LEVEL.(state.level.box) in
       set_color P.text_color;
       moveto (middle_x - (line1_w / 2)) (middle_y + 10);
       draw_string line1;
-      set_font P.medium_font;
+      (*set_font P.medium_font;*)
       let line2_w, _ = text_size line2 in
       moveto (middle_x - (line2_w / 2)) (middle_y - 10);
       draw_string line2)
@@ -195,7 +195,7 @@ module Make (P : PARAMS) = struct
     let line2 = "Use mouse to move paddle" in
     let line3 = "Click to pause" in
     Graphics.(
-      set_font P.medium_font;
+      (*set_font P.medium_font;*)
       let line1_w, _ = text_size line1 in
       let line2_w, _ = text_size line2 in
       let line3_w, _ = text_size line3 in

@@ -30,7 +30,7 @@ module Make (P : PARAMS) = struct
     List.iter BRICK.draw bricks;
     BOX.draw box;
     Graphics.(
-      set_font P.medium_font;
+      (*set_font P.medium_font;*)
       let text_w, _ = text_size filename in
       moveto (size_x () - (text_w + int_of_float P.box_marge + 1)) (int_of_float P.box_marge);
       set_color P.text_color;
