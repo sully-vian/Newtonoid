@@ -38,7 +38,15 @@ Chaque objet du jeu est modélisé par un type enregistrement afin de permettre 
 
 \section{États de jeu}
 
-% TODO
+Au lancement du jeu, notre système est à l'état initial (Init). En effectuant un clique de souris, notre jeu pass à l'état Playing. Si l'on clique à nouveau cela nous permet de mettre le jeu en pause. En jouant la partie, il y a trois façons de sortir de l'état Playing :
+
+\begin{itemize}
+    \item Si l'on réussit à casser toutes les briques, le niveau est alors fini. On passe à l'état Victory. En cliquant a nouveau on passe au niveau suivant. Si tous les niveaux sont terminés, le jeu s'arrête.
+    \item Si on perd une vie sans tomber à 0, le jeu retourne à l'état initial mais avec une vie en moins. Pour reprendre le jeu il nous suffit de cliquer à nouveau.
+    \item Si on perd notre dernière vie alors le jeu passe dans l'état GameOver et la partie s'arrête.
+\end{itemize}
+
+Cette structure d'états est illustrée dans le graphe ci-dessous.
 
 \begin{figure}
     \centering
@@ -89,7 +97,7 @@ Ainsi, voici un exemple de ce que permet cette liberté de création:
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.5\textwidth]{img/amongus.png.png}
+    \includegraphics[width=0.5\textwidth]{img/amongus.png}
     \caption{Représentation d'un niveau type Among Us}
     \label{fig:amongus}
 \end{figure}
