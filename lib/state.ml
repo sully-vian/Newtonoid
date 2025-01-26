@@ -250,7 +250,7 @@ module Make (P : PARAMS) = struct
      | _ -> fun _ -> ())
       state;
     (* Debug *)
-    Graphics.(
+    (* Graphics.(
       let ball = state.ball in
       set_font P.medium_font;
       set_color P.text_color;
@@ -261,6 +261,6 @@ module Make (P : PARAMS) = struct
       moveto 175 15;
       draw_string (Format.sprintf "ball vx: %d" (int_of_float BALL.(ball.vx)));
       moveto 175 30;
-      draw_string (Format.sprintf "ball vy: %d" (int_of_float BALL.(ball.vy))))
+      draw_string (Format.sprintf "ball vy: %d" (int_of_float BALL.(ball.vy)))) *)
   ;;
 end
