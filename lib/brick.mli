@@ -8,7 +8,13 @@ module Make (P : PARAMS) : sig
     | Strong
     | Unbreakable
 
-  (** [Brick.t] représente une brique par un rectangle [rect], un type de brique [kind] et un nombre de point de vie [pv]. *)
+  (** [Brick.t] représente une brique.
+    - [x] est l'abscisse du coin inférieur gauche de la brique.
+    - [y] est l'ordonnée du coin inférieur gauche de la brique.
+    - [w] est la largeur de la brique.
+    - [h] est la hauteur de la brique.
+    - [kind] est le type de brique.
+    - [pv] est le nombre de points de vie de la brique. *)
   type t =
     { x : float
     ; y : float

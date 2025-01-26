@@ -34,11 +34,11 @@ module Make (P : PARAMS) = struct
     }
   ;;
 
-  let update (x_mouse, click) { ball; level; score; paddle; status } =
+  let update (x_mouse, click) state =
     if click then
       (* dodo pour éviter de comptabiliser plusieurs clicks en une frame *)
       Unix.sleepf 0.1;
-    match status with
+    match state.status with
     | Paused ->
       let status' =
         if click then
@@ -46,7 +46,7 @@ module Make (P : PARAMS) = struct
         else
           Paused
       in
-      { ball; level; score; paddle; status = status' }
+      { state with status = status' }
     | GameOver ->
       let status' =
         if click then
@@ -54,7 +54,7 @@ module Make (P : PARAMS) = struct
         else
           GameOver
       in
-      { ball; level; score; paddle; status = status' }
+      { state with status = status' }
     | Victory ->
       let status' =
         if click then
@@ -62,13 +62,13 @@ module Make (P : PARAMS) = struct
         else
           Victory
       in
-      { ball; level; score; paddle; status = status' }
+      { state with status = status' }
     | Init ->
-      let paddle' = PADDLE.update LEVEL.(level.box) x_mouse paddle in
+      let paddle' = PADDLE.update LEVEL.(state.level.box) x_mouse state.paddle in
       let ball' =
         let x' = PADDLE.(paddle'.x +. (paddle'.w /. 2.)) in
-        let y' = PADDLE.(paddle'.y +. paddle'.h) +. BALL.(ball.r) in
-        BALL.{ ball with x = x'; y = y'; vx = 0.; vy = P.ball_init_vy }
+        let y' = PADDLE.(paddle'.y +. paddle'.h) +. BALL.(state.ball.r) in
+        BALL.{ state.ball with x = x'; y = y'; vx = 0.; vy = P.ball_init_vy }
       in
       let status' =
         (* début du jeu si click *)
@@ -77,23 +77,23 @@ module Make (P : PARAMS) = struct
         else
           Init
       in
-      { ball = ball'; level; score; paddle = paddle'; status = status' }
+      { state with ball = ball'; paddle = paddle'; status = status' }
     | Playing ->
       (* m-à-j de la raquette puis collisions et test de survie *)
-      let paddle' = PADDLE.update LEVEL.(level.box) x_mouse paddle in
+      let paddle' = PADDLE.update LEVEL.(state.level.box) x_mouse state.paddle in
       let ball', level', score' =
-        let after_update = BALL.move ball in
+        let after_update = BALL.move state.ball in
         COLLISION.(
-          let after_paddle = with_paddle after_update paddle in
-          let after_box = with_box LEVEL.(level.box) after_paddle in
-          let after_level = with_level after_box level score in
+          let after_paddle = with_paddle after_update state.paddle in
+          let after_box = with_box LEVEL.(state.level.box) after_paddle in
+          let after_level = with_level after_box state.level state.score in
           after_level)
       in
       let status' =
         if BALL.(ball'.pv) = 0 then
           (* partie perdue *)
           GameOver
-        else if BALL.(ball.pv > ball'.pv) then
+        else if BALL.(state.ball.pv > ball'.pv) then
           (* vie perdue on replace la balle sur la raquette *)
           Init
         else if click then
@@ -107,11 +107,11 @@ module Make (P : PARAMS) = struct
       in
       { ball = ball'; level = level'; score = score'; paddle = paddle'; status = status' }
     | SwitchLevel ->
-      (* devrait pas arriver *)
+      (* ne devrait pas arriver *)
       print_endline "SwitchLevel";
       exit 1
     | Quit ->
-      (* devrait pas arriver *)
+      (* ne devrait pas arriver *)
       print_endline "Quit";
       exit 1
   ;;
@@ -191,14 +191,22 @@ module Make (P : PARAMS) = struct
   ;;
 
   let draw_init state =
-    let line = "Click to throw ball" in
+    let line1 = "Click to throw ball" in
+    let line2 = "Use mouse to move paddle" in
+    let line3 = "Click to pause" in
     Graphics.(
       set_font P.medium_font;
-      let line_w, _ = text_size line in
+      let line1_w, _ = text_size line1 in
+      let line2_w, _ = text_size line2 in
+      let line3_w, _ = text_size line3 in
       let middle_x, middle_y = BOX.middle LEVEL.(state.level.box) in
       set_color P.text_color;
-      moveto (middle_x - (line_w / 2)) (middle_y - 10);
-      draw_string line)
+      moveto (middle_x - (line1_w / 2)) (middle_y + 10);
+      draw_string line1;
+      moveto (middle_x - (line2_w / 2)) (middle_y - 10);
+      draw_string line2;
+      moveto (middle_x - (line3_w / 2)) (middle_y - 30);
+      draw_string line3)
   ;;
 
   let draw_victory state =

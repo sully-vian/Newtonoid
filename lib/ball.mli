@@ -20,7 +20,7 @@ module Make (P : PARAMS) : sig
   (** [make] crée une balle avec les paramètres de [P] et de vitesse horizontale nulle. *)
   val make : t
 
-  (** [move ball] déplace la balle [ball] en fonction de sa vitesse et de [P.dt]. *)
+  (** [move ball] déplace la balle [ball] en fonction de sa vitesse et met à jour sa vitesse sous l'effet de la gravité. *)
   val move : t -> t
 
   (** [bound_speed ball] renvoie la balle [ball] avec des vitesses respectant les bornes définies dans [P] *)

@@ -18,6 +18,7 @@ module type PARAMS = sig
   val paddle_w : float
   val paddle_h : float
   val dt : float
+  val g : float
   val shadow_offset_x : int
   val shadow_offset_y : int
   val box_marge : float
@@ -70,6 +71,7 @@ end) : PARAMS = struct
   let paddle_w = assoc_float "paddle_w"
   let paddle_h = assoc_float "paddle_h"
   let dt = assoc_float "dt"
+  let g = assoc_float "g"
   let shadow_offset_x = assoc_int "shadow_offset_x"
   let shadow_offset_y = assoc_int "shadow_offset_y"
   let box_marge = assoc_float "box_marge"

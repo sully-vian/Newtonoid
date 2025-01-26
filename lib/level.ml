@@ -7,9 +7,10 @@ module Make (P : PARAMS) = struct
   type t =
     { bricks : BRICK.t list
     ; box : BOX.t
+    ; filename : string
     }
 
-  let make bricks box = { bricks; box }
+  let make bricks box filename = { bricks; box; filename }
   let make_brick x y kind = BRICK.make x y P.brick_w P.brick_h kind
 
   let is_finished level =
@@ -25,9 +26,15 @@ module Make (P : PARAMS) = struct
     aux level.bricks
   ;;
 
-  let draw { bricks; box } =
+  let draw { bricks; box; filename } =
     List.iter BRICK.draw bricks;
-    BOX.draw box
+    BOX.draw box;
+    Graphics.(
+      set_font P.medium_font;
+      let text_w, _ = text_size filename in
+      moveto (size_x () - (text_w + int_of_float P.box_marge + 1)) (int_of_float P.box_marge);
+      set_color P.text_color;
+      draw_string filename)
   ;;
 
   let draw_shadow { bricks; _ } = List.iter BRICK.draw_shadow bricks
@@ -62,7 +69,7 @@ module Make (P : PARAMS) = struct
              (Printf.sprintf "Invalid character '%c' in level file '%s'" c filename))
     in
     let bricks = aux 0. box.supy [] chars in
-    { bricks; box }
+    { bricks; box; filename }
   ;;
 
   let example_level =
@@ -125,6 +132,7 @@ module Make (P : PARAMS) = struct
         ; make_brick 700. 410. BRICK.Weak
         ]
     ; box = BOX.make 10. 10. 1000. 600.
+    ; filename = "example_level"
     }
   ;;
 end

@@ -10,7 +10,7 @@ let usage () =
   exit 1
 ;;
 
-let default_levels = [ "levels/level1.txt"; "levels/level2.txt" ]
+let default_levels = [ "levels/default-1.txt"; "levels/default-2.txt" ]
 let default_config = "configs/default.conf"
 
 let parse_args args =

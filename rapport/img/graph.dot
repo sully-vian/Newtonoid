@@ -29,5 +29,5 @@ digraph G {
     "SwitchLevel" -> "Init" [label = "!next_levels.empty"; color = green; fontcolor = "green";];
     "SwitchLevel" -> "None" [label = "next_levels.empty"; color = green; fontcolor = "green";];
     
-    "Quit" -> "None" [label = "true";];
+    "Quit" -> "None";
 }

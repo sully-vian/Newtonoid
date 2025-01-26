@@ -27,6 +27,7 @@ module type PARAMS = sig
 
   (* General params *)
   val dt : float
+  val g : float (* g < 0 => vers le bas *)
   val shadow_offset_x : int
   val shadow_offset_y : int
   val box_marge : float

@@ -33,37 +33,67 @@ let%test_module "BALL.move" =
     let%test "move ball 1" =
       let ball = { make with vx = 12.; vy = 34. } in
       let ball' = move ball in
-      ball' = { ball with x = ball.x +. (12. *. P.dt); y = ball.y +. (34. *. P.dt) }
+      ball'
+      = { ball with
+          x = ball.x +. (12. *. P.dt)
+        ; y = ball.y +. (34. *. P.dt)
+        ; vy = ball.vy +. (P.g *. P.dt)
+        }
     ;;
 
     let%test "move ball 2" =
       let ball = { make with vx = -12.; vy = -34. } in
       let ball' = move ball in
-      ball' = { ball with x = ball.x +. (-12. *. P.dt); y = ball.y +. (-34. *. P.dt) }
+      ball'
+      = { ball with
+          x = ball.x +. (-12. *. P.dt)
+        ; y = ball.y +. (-34. *. P.dt)
+        ; vy = ball.vy +. (P.g *. P.dt)
+        }
     ;;
 
     let%test "move ball 3" =
       let ball = { make with vx = 0.; vy = 0. } in
       let ball' = move ball in
-      ball' = { ball with x = ball.x +. (0. *. P.dt); y = ball.y +. (0. *. P.dt) }
+      ball'
+      = { ball with
+          x = ball.x +. (0. *. P.dt)
+        ; y = ball.y +. (0. *. P.dt)
+        ; vy = ball.vy +. (P.g *. P.dt)
+        }
     ;;
 
     let%test "move ball 4" =
       let ball = { make with vx = 5.; vy = 10. } in
       let ball' = move ball in
-      ball' = { ball with x = ball.x +. (5. *. P.dt); y = ball.y +. (10. *. P.dt) }
+      ball'
+      = { ball with
+          x = ball.x +. (5. *. P.dt)
+        ; y = ball.y +. (10. *. P.dt)
+        ; vy = ball.vy +. (P.g *. P.dt)
+        }
     ;;
 
     let%test "move ball 5" =
       let ball = { make with vx = -5.; vy = -10. } in
       let ball' = move ball in
-      ball' = { ball with x = ball.x +. (-5. *. P.dt); y = ball.y +. (-10. *. P.dt) }
+      ball'
+      = { ball with
+          x = ball.x +. (-5. *. P.dt)
+        ; y = ball.y +. (-10. *. P.dt)
+        ; vy = ball.vy +. (P.g *. P.dt)
+        }
     ;;
 
     let%test "move ball 6" =
       let ball = { make with vx = 3.; vy = -7. } in
       let ball' = move ball in
-      ball' = { ball with x = ball.x +. (3. *. P.dt); y = ball.y +. (-7. *. P.dt) }
+      ball'
+      = { ball with
+          x = ball.x +. (3. *. P.dt)
+        ; y = ball.y +. (-7. *. P.dt)
+        ; vy = ball.vy +. (P.g *. P.dt)
+        }
     ;;
   end)
 ;;

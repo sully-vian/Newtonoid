@@ -1,12 +1,5 @@
 # Newtonoid
 
-## TODO
-
-- quadtree (partition quadrillée qui force le découpage du quadtree)
-- sons
-- briques avec pouvoirs (+1 vie, balle ralentie, raquette élargie)
-- tests unitaires
-
 ## Pour compiler
 
 ```bash

@@ -1,7 +1,12 @@
 open Params
 
 module Make (P : PARAMS) : sig
-  (** [Paddle.t] représente la raquette du joueur. *)
+  (** [Paddle.t] représente la raquette du joueur.
+    - [x] est l'abscisse du coin inférieur gauche de la raquette.
+    - [y] est l'ordonnée du coin inférieur gauche de la raquette.
+    - [w] est la largeur de la raquette.
+    - [h] est la hauteur de la raquette.
+    - [vx] est la vitesse de déplacement horizontal de la raquette. *)
   type t =
     { x : float
     ; y : float

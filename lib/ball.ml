@@ -20,9 +20,15 @@ module Make (P : PARAMS) = struct
     ; vy = P.ball_init_vy
     ; pv = P.ball_pv
     }
+  ;;
 
   let move ball =
-    { ball with x = ball.x +. (ball.vx *. P.dt); y = ball.y +. (ball.vy *. P.dt) }
+    { ball with
+      x = ball.x +. (ball.vx *. P.dt)
+    ; y = ball.y +. (ball.vy *. P.dt)
+    ; vy = ball.vy +. (P.g *. P.dt)
+    }
+  ;;
 
   let bound_speed ball =
     (* on borne vx *)
@@ -44,11 +50,13 @@ module Make (P : PARAMS) = struct
         ball.vy
     in
     { ball with vx = vx'; vy = vy' }
+  ;;
 
   let draw ball =
     Graphics.(
       set_color P.ball_color;
       fill_circle (int_of_float ball.x) (int_of_float ball.y) (int_of_float ball.r))
+  ;;
 
   let draw_shadow ball =
     Graphics.(
@@ -57,4 +65,5 @@ module Make (P : PARAMS) = struct
         (int_of_float ball.x + P.shadow_offset_x)
         (int_of_float ball.y + P.shadow_offset_y)
         (int_of_float ball.r))
+  ;;
 end
