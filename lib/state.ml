@@ -146,7 +146,7 @@ module Make (P : PARAMS) = struct
 
   let draw_pv ball =
     Graphics.(
-      set_font P.medium_font;
+      (*set_font P.medium_font;*)
       set_color P.text_color;
       moveto 15 15;
       draw_string (Format.sprintf "PVs : %d" BALL.(ball.pv)))
@@ -173,7 +173,7 @@ module Make (P : PARAMS) = struct
     let line2 = Format.sprintf "Final Score: %d" state.score in
     let line3 = "Click to quit game" in
     Graphics.(
-      set_font P.large_font;
+      (*set_font P.large_font;*)
       let line1_w, _ = text_size line1 in
       let line2_w, _ = text_size line2 in
       let middle_x, middle_y = BOX.middle LEVEL.(state.level.box) in
@@ -183,7 +183,7 @@ module Make (P : PARAMS) = struct
       moveto (middle_x - (line2_w / 2)) (middle_y - 10);
       draw_string line2;
       (* quit game *)
-      set_font P.medium_font;
+      (*set_font P.medium_font;*)
       let line3_w, _ = text_size line3 in
       set_color P.text_color;
       moveto (middle_x - (line3_w / 2)) (middle_y - 30);
@@ -215,7 +215,7 @@ module Make (P : PARAMS) = struct
     let line3 = "Click to go to the next level (or quit if it's the last one)" in
     Graphics.(
       (* victory message *)
-      set_font P.large_font;
+      (*set_font P.large_font;*)
       let line1_w, _ = text_size line1 in
       let line2_w, _ = text_size line2 in
       let middle_x, middle_y = BOX.middle LEVEL.(state.level.box) in
@@ -225,7 +225,7 @@ module Make (P : PARAMS) = struct
       moveto (middle_x - (line2_w / 2)) (middle_y - 10);
       draw_string line2;
       (* goto next level *)
-      set_font P.medium_font;
+      (*set_font P.medium_font;*)
       let line3_w, _ = text_size line3 in
       set_color P.text_color;
       moveto (middle_x - (line3_w / 2)) (middle_y - 30);
@@ -252,7 +252,7 @@ module Make (P : PARAMS) = struct
     (* Debug *)
     (* Graphics.(
       let ball = state.ball in
-      set_font P.medium_font;
+      (*set_font P.medium_font;*)
       set_color P.text_color;
       moveto 100 15;
       draw_string (Format.sprintf "ball x: %d" (int_of_float BALL.(ball.x)));

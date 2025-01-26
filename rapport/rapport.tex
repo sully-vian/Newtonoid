@@ -65,11 +65,11 @@ Nous avons décidé de n'utiliser qu'un seul flux d'état de premier élément l
 
 \subsection{Niveaux de jeu}
 
-Initialement, un niveau de jeu était défini en OCaml et chaque brique ajoutée séparément. C'était à la fois verbeux et peu pratique. Nous avons donc "développé" une syntaxe très simple pour définir un niveau textuellement. Chaque type de brique est représenté par un caractère différent et l'air est représenté par un espace. Les bordures sont fixées avec les caractères tiret et barre verticale. Deux exemples de niveaux sont donnés à la figure \ref{fig:level.txt}.
+Initialement, un niveau de jeu était défini en OCaml et chaque brique ajoutée séparément. C'était à la fois verbeux et peu pratique. Nous avons donc "développé" une syntaxe très simple pour définir un niveau textuellement. Chaque type de brique est représenté par un caractère différent et l'air est représenté par un espace. Les bordures sont fixées avec les caractères tiret et barre verticale. la figure \ref{fig:level.txt} montre deux exemples de définition de niveaux. La figure \ref{fig:amongus} montre un exemple de niveau tel que vu dans le jeu.
 
 Des exemples de niveaux sont disponibles dans le répertoires \texttt{levels}.
 
-Cette solution a donné une liberté de création qui pose un autre problème. Désormais, les niveaux peuvent avoir différents formats. Afin d'éviter les niveaux débordant de la fenêtre, les dimensiosn de cette dernière sont fonction directe des dimensions du niveau et de la taille des briques.
+Cette solution a donné une liberté de création qui pose un autre problème. Désormais, les niveaux peuvent avoir différents formats. Afin d'éviter les niveaux débordant de la fenêtre, les dimensions de cette dernière sont fonction directe des dimensions du niveau et de la taille des briques.
 
 \begin{figure}
     \begin{minipage}{0.4\textwidth}
@@ -99,6 +99,13 @@ Cette solution a donné une liberté de création qui pose un autre problème. D
     \end{minipage}
     \caption{Exemples de niveau}
     \label{fig:level.txt}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.3\textwidth]{img/amongus.png}
+    \caption{Représentation du niveau issu du fichier \texttt{levels/amongus.txt}}
+    \label{fig:amongus}
 \end{figure}
 
 \section{Paramètres}
